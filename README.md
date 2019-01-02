@@ -8,6 +8,10 @@ Java Backend that will interface with a PostgreSQL database.  Planning to take a
 
 Eventually plan to leverage k8s to deploy several docker containers (Backend, Frontend, Database, whatever else)
 
+## TODO 
+* For now, I've totally lifted the POM from Helidon.  I eventually want to turn this into a build.gradle and move over to gradle and take out what I don't want
+* Write some Code!
+
 ## Related Projects
 //TODO - will add when the latest and greatest frontend is started
 
