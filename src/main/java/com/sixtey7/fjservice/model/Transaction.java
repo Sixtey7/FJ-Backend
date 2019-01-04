@@ -29,14 +29,6 @@ public class Transaction {
         this.type = TransType.FUTURE;
     }
 
-    /**
-     * Build and return a transaction based on the provided JSONObject
-     * @param transInJSON
-     */
-    public Transaction (JsonObject transInJSON) {
-        //TODO
-    }
-
     public UUID getTransId() {
         return transId;
     }
@@ -91,16 +83,6 @@ public class Transaction {
 
     public void setNotes(String notes) {
         this.notes = notes;
-    }
-
-    /**
-     * Return the object as a JsonObject
-     * @return the object represented as a JsonObject
-     */
-    public JsonObject toJSON() {
-        return Json.createObjectBuilder()
-            .add("todo", "todo")
-            .build();
     }
 
     /**

@@ -5,9 +5,12 @@
     <persistence-unit name="FJDB" transaction-type="RESOURCE_LOCAL">
 
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <class>com.sixtey7.fjservice.model.AccountConverter</class>
+        <class>com.sixtey7.fjservice.model.converter.AccountConverter</class>
+        <class>com.sixtey7.fjservice.model.converter.TransactionConverter</class>
         <class>com.sixtey7.fjservice.model.AccountRecord</class>
         <class>com.sixtey7.fjservice.model.Account</class>
+        <class>com.sixtey7.fjservice.model.TransactionRecord</class>
+        <class>com.sixtey7.fjservice.model.Transaction</class>
         <properties>
             <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver" />
             <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/fjdb?stringtype=unspecified" />

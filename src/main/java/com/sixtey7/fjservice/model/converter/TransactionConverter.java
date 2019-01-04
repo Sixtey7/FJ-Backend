@@ -1,19 +1,17 @@
-package com.sixtey7.fjservice.model;
+package com.sixtey7.fjservice.model.converter;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sixtey7.fjservice.model.Transaction;
 
 import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
 import java.io.IOException;
 
-
-@Converter
-public class AccountConverter implements AttributeConverter<Account, String> {
+public class TransactionConverter implements AttributeConverter<Transaction, String> {
     private final ObjectMapper mapper = new ObjectMapper();
 
     @Override
-    public String convertToDatabaseColumn(Account account) {
+    public String convertToDatabaseColumn(Transaction account) {
         try {
             return mapper.writeValueAsString(account);
         }
@@ -24,13 +22,13 @@ public class AccountConverter implements AttributeConverter<Account, String> {
     }
 
     @Override
-    public Account convertToEntityAttribute(String s) {
+    public Transaction convertToEntityAttribute(String s) {
         if (s == null) {
             return null;
         }
 
         try {
-            return mapper.readValue(s, Account.class);
+            return mapper.readValue(s, Transaction.class);
         }
         catch(IOException ioe) {
             System.out.println(ioe.getMessage());

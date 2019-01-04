@@ -1,15 +1,26 @@
 package com.sixtey7.fjservice.model;
 
-import javax.json.JsonObject;
-import java.util.UUID;
+import com.sixtey7.fjservice.model.converter.TransactionConverter;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 /**
  * Helper class to be used to interact with the database
  */
+@Entity
+@Table(name = "Transactions")
 public class TransactionRecord {
 
-    private UUID id;
-    private JsonObject body;
+    @Id
+    @NotNull
+    @Column(name = "id")
+    private String id;
+
+    @NotNull
+    @Column(name = "data")
+    @Convert(converter = TransactionConverter.class)
+    private Transaction data;
 
     /**
      * Don't want anyone hitting the default constructor
@@ -20,7 +31,7 @@ public class TransactionRecord {
      * Returns the id of the record
      * @return the uuid of the record
      */
-    public UUID getId() {
+    public String getId() {
         return id;
     }
 
@@ -28,7 +39,7 @@ public class TransactionRecord {
      * Setter for the id
      * @param id the id to set
      */
-    public void setId(UUID id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -36,15 +47,15 @@ public class TransactionRecord {
      * Returns the body of the record
      * @return the json of the body
      */
-    public JsonObject getBody() {
-        return body;
+    public Transaction getData() {
+        return data;
     }
 
     /**
      * Sets the body for the record
-     * @param body the body object (as a JsonObject)
+     * @param data the data object (as a Transaction object)
      */
-    public void setBody(JsonObject body) {
-        this.body = body;
+    public void setData(Transaction data) {
+        this.data = data;
     }
 }

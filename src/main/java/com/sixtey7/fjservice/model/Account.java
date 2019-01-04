@@ -44,14 +44,6 @@ public class Account {
         this.name = name;
     }
 
-    /**
-     * Takes in the Json representation of the account and returns a constructed account
-     * @param accountInJson the account as a JsonObject
-     */
-    public Account (JsonObject accountInJson) {
-        //TODO
-    }
-
     public UUID getId() {
         return id;
     }
@@ -90,15 +82,5 @@ public class Account {
 
     public void setDynamic(Boolean dynamic) {
         this.dynamic = dynamic;
-    }
-
-    /**
-     * Return the object as a JsonObject
-     * @return the object represented as a JsonObject
-     */
-    public JsonObject toJSON() {
-        return Json.createObjectBuilder()
-                .add("todo", "todo")
-                .build();
     }
 }

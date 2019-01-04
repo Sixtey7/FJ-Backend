@@ -1,11 +1,7 @@
 package com.sixtey7.fjservice.model;
 
-import org.eclipse.persistence.annotations.Converter;
+import com.sixtey7.fjservice.model.converter.AccountConverter;
 
-import javax.json.JsonObject;
-import javax.json.bind.annotation.JsonbAnnotation;
-import javax.json.bind.annotation.JsonbProperty;
-import javax.json.bind.annotation.JsonbTypeSerializer;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.UUID;
@@ -63,7 +59,7 @@ public class AccountRecord {
 
     /**
      * Sets the data for the record
-     * @param data the data object (as a JsonObject)
+     * @param data the data object (as an Account object)
      */
     public void setData(Account data) {
         this.data = data;
