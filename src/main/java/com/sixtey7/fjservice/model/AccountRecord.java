@@ -1,26 +1,47 @@
 package com.sixtey7.fjservice.model;
 
+import org.eclipse.persistence.annotations.Converter;
+
 import javax.json.JsonObject;
+import javax.json.bind.annotation.JsonbAnnotation;
+import javax.json.bind.annotation.JsonbProperty;
+import javax.json.bind.annotation.JsonbTypeSerializer;
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
 /**
  * Helper class to be used to interact with the database
  */
+@Entity
+@Table(name = "Accounts")
 public class AccountRecord {
 
-    private UUID id;
-    private JsonObject body;
+    @Id
+    @NotNull
+    @Column(name = "id")
+    private String id;
+
+    @NotNull
+    @Column(name = "data")
+    @Convert(converter = AccountConverter.class)
+    private Account data;
 
     /**
      * Don't want anyone hitting the default constructor
      */
     private AccountRecord() { }
 
+    public AccountRecord(UUID id, Account data) {
+        this.id = id.toString();
+        this.data = data;
+    }
+
     /**
      * Returns the id of the record
      * @return the uuid of the record
      */
-    public UUID getId() {
+    public String getId() {
         return id;
     }
 
@@ -28,23 +49,23 @@ public class AccountRecord {
      * Setter for the id
      * @param id the id to set
      */
-    public void setId(UUID id) {
+    public void setId(String id) {
         this.id = id;
     }
 
     /**
-     * Returns the body of the record
+     * Returns the data of the record
      * @return the json of the body
      */
-    public JsonObject getBody() {
-        return body;
+    public Account getData() {
+        return data;
     }
 
     /**
-     * Sets the body for the record
-     * @param body the body object (as a JsonObject)
+     * Sets the data for the record
+     * @param data the data object (as a JsonObject)
      */
-    public void setBody(JsonObject body) {
-        this.body = body;
+    public void setData(Account data) {
+        this.data = data;
     }
 }
