@@ -1,7 +1,5 @@
 package com.sixtey7.fjservice.model;
 
-import javax.json.Json;
-import javax.json.JsonObject;
 import java.util.UUID;
 
 /**
@@ -37,7 +35,7 @@ public class Account {
     /**
      * Masking the default constructor because we don't want the required fields to not be set
      */
-    private Account() { }
+    public Account() { }
 
     public Account(String name) {
         this.id = UUID.randomUUID();

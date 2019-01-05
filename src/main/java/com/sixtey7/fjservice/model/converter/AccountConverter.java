@@ -3,6 +3,7 @@ package com.sixtey7.fjservice.model.converter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sixtey7.fjservice.model.Account;
+import org.postgresql.util.PGobject;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
@@ -10,7 +11,7 @@ import java.io.IOException;
 
 
 @Converter
-public class AccountConverter implements AttributeConverter<Account, String> {
+public class AccountConverter implements AttributeConverter<Account, Object> {
     private final ObjectMapper mapper = new ObjectMapper();
 
     @Override
@@ -25,17 +26,29 @@ public class AccountConverter implements AttributeConverter<Account, String> {
     }
 
     @Override
-    public Account convertToEntityAttribute(String s) {
-        if (s == null) {
-            return null;
-        }
+    public Account convertToEntityAttribute(Object obj ) {
+        if (obj instanceof PGobject) {
+            PGobject pgObj = (PGobject) obj;
+            String objAsString = pgObj.toString();
 
-        try {
-            return mapper.readValue(s, Account.class);
+            if (objAsString == null) {
+                return null;
+            }
+
+            try {
+                return mapper.readValue(objAsString, Account.class);
+            }
+            catch(IOException ioe) {
+                System.out.println("ERROR!!" + ioe.getMessage());
+                throw new RuntimeException(ioe.getMessage());
+            }
+            catch (Exception ex) {
+                System.out.println("ERROR!!" + ex.getMessage());
+                throw new RuntimeException(ex.getMessage());
+            }
         }
-        catch(IOException ioe) {
-            System.out.println(ioe.getMessage());
-            throw new RuntimeException(ioe.getMessage());
+        else {
+            return null;
         }
     }
 }

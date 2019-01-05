@@ -1,4 +1,4 @@
-package com.sixtey7.fjservice;
+package com.sixtey7.fjservice.rest;
 
 import java.util.Set;
 

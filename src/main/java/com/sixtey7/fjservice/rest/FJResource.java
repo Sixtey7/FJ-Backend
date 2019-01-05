@@ -1,4 +1,4 @@
-package com.sixtey7.fjservice;
+package com.sixtey7.fjservice.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sixtey7.fjservice.model.Account;
@@ -45,15 +45,17 @@ public class FJResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public String tryDatabase() {
-        try {
+        System.out.println("Running try database!");
+        EntityManager em = null;
+        try  {
             EntityManagerFactory emf = Persistence.createEntityManagerFactory("FJDB");
-            EntityManager em = emf.createEntityManager();
+            em = emf.createEntityManager();
 
             List<AccountRecord> records = em.createQuery("Select a from AccountRecord a", AccountRecord.class).getResultList();
 
-            em.close();
             if (records.size() > 0) {
-                return new ObjectMapper().writeValueAsString(records.get(0).getData());
+                System.out.println("Size was: " + records.size());
+                return new ObjectMapper().writeValueAsString(records.get(records.size() - 1).getData());
                 //return records.get(0).getData();
             }
             else {
@@ -61,27 +63,38 @@ public class FJResource {
             }
         }
         catch (Exception ex) {
+            ex.printStackTrace();
             return ex.getMessage();
+        }
+        finally {
+            if (em != null) {
+                em.close();
+            }
         }
     }
 
     @Path("/putIntoDB/{message}")
     @PUT
     public void putIntoDB(@PathParam("message") final String message) {
+        EntityManager em = null;
         try {
             EntityManagerFactory emf = Persistence.createEntityManagerFactory("FJDB");
-            EntityManager em = emf.createEntityManager();
+            em = emf.createEntityManager();
 
             Account objectToStore = new Account(message);
             AccountRecord ar = new AccountRecord(UUID.randomUUID(), objectToStore);
 
             em.getTransaction().begin();
             em.persist(ar);
-            em.getTransaction().commit();;
-            em.close();
+            em.getTransaction().commit();
         }
         catch(Exception ex) {
             System.out.println(ex.getMessage());
+        }
+        finally {
+            if (em != null) {
+                em.close();
+            }
         }
     }
 }
