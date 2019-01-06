@@ -17,6 +17,6 @@ public class FJApplication extends Application {
 
     @Override
     public Set<Class<?>> getClasses() {
-        return CollectionsHelper.setOf(FJResource.class);
+        return CollectionsHelper.setOf(FJResource.class, AccountResource.class);
     }
 }
