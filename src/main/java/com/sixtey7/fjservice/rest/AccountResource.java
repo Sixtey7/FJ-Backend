@@ -97,4 +97,16 @@ public class AccountResource {
 
         return returnVal;
     }
+
+    @Path("")
+    @DELETE
+    public int deleteAll() {
+        EntityManager em = emf.createEntityManager();
+
+        em.getTransaction().begin();
+        int returnVal = em.createQuery("Delete from AccountRecord a").executeUpdate();
+        em.getTransaction().commit();
+
+        return returnVal;
+    }
 }
