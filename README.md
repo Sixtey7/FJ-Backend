@@ -15,5 +15,27 @@ Eventually plan to leverage k8s to deploy several docker containers (Backend, Fr
 ## Related Projects
 //TODO - will add when the latest and greatest frontend is started
 
+## Getting Started
+
+### Create the Database
+* From the command line, run the command
+    * sudo -u postgres createdb fjdb
+* Then login as postgres to psql
+    * sudo -u postgres psql postgres
+* Run the command
+    * GRANT ALL PRIVILEGES ON DATABASE fjdb TO fjuser;
+* Exit the database and log in as fjuser
+    * psql -U fjuser fjdb
+* Create the Accounts table
+    * CREATE TABLE Accounts (id VARCHAR PRIMARY KEY, data jsonb);
+* Profit!
+
+### Sample REST Requests
+#### Accounts
+* Get All Accounts
+    * curl http://localhost:8080/accounts
+* Put in an Account
+    * curl -XPUT -H "Content-type: application/json" -i -d '{"name":"test"}' http://localhost:8080/accounts
+
 ## References
 https://helidon.io/
