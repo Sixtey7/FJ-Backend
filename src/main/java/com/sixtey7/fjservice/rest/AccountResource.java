@@ -89,29 +89,17 @@ public class AccountResource {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response updateAccount(@PathParam("accountId") final String accountId, final Account account) {
         if (accountId == null) {
-            return Response.status(400, "ID is required as part of the path!").build();
+            return Response.status(400).entity("ID is required as part of the path!").build();
         }
 
-        AccountRecord arToPersist = new AccountRecord(UUID.fromString(accountId), account);
+        boolean result = dao.updateAccount(accountId, account);
 
-        EntityManager em = null;
-        try {
-            em = emf.createEntityManager();
-
-            em.getTransaction().begin();
-            em.merge(arToPersist);
-            em.getTransaction().commit();
+        if (result) {
+            return Response.status(200).build();
         }
-        catch(Exception ex) {
-            return Response.status(500, ex.getMessage()).build();
+        else {
+            return Response.status(500).entity("Failed to save account update!").build();
         }
-        finally {
-            if (em != null) {
-                em.close();
-            }
-        }
-
-        return Response.status(200).build();
 
     }
 
@@ -119,24 +107,12 @@ public class AccountResource {
     @DELETE
     @Produces(MediaType.TEXT_PLAIN)
     public int deleteAccount(@PathParam("accountId") final String accountId) {
-        EntityManager em = emf.createEntityManager();
-
-        em.getTransaction().begin();
-        int returnVal = em.createQuery("Delete from AccountRecord a where a.id = '" + accountId + "'").executeUpdate();
-        em.getTransaction().commit();
-
-        return returnVal;
+        return dao.deleteAccount(accountId);
     }
 
     @Path("")
     @DELETE
     public int deleteAll() {
-        EntityManager em = emf.createEntityManager();
-
-        em.getTransaction().begin();
-        int returnVal = em.createQuery("Delete from AccountRecord a").executeUpdate();
-        em.getTransaction().commit();
-
-        return returnVal;
+        return dao.deleteAllAccounts();
     }
 }
