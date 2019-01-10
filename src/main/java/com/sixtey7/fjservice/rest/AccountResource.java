@@ -4,14 +4,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sixtey7.fjservice.model.Account;
 import com.sixtey7.fjservice.model.AccountRecord;
+import com.sixtey7.fjservice.model.db.AccountDAO;
 
 import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
 import javax.json.Json;
 import javax.json.JsonObject;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.NoResultException;
-import javax.persistence.Persistence;
+import javax.persistence.*;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -21,6 +20,10 @@ import java.util.UUID;
 @Path("/accounts")
 @RequestScoped
 public class AccountResource {
+
+    @Inject
+    private AccountDAO dao;
+
 
     EntityManagerFactory emf = Persistence.createEntityManagerFactory("FJDB");
 
@@ -33,58 +36,38 @@ public class AccountResource {
                 .build();
     }
 
-    @Path("")
+   @Path("")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public String getAllAccounts() {
-        //TODO: This should be factored out of the class
-        EntityManager em = null;
-        try {
-            //TODO: Probably should have a central EntityManager
-            em = emf.createEntityManager();
+    public Response getAllAccounts() {
+        List<Account> allAccounts = dao.getAllAccounts();
 
-            List<AccountRecord> records = em.createQuery("Select a from AccountRecord a", AccountRecord.class).getResultList();
-            //I believe OM's are expensive to create, should be smarter here
+        try {
             ObjectMapper om = new ObjectMapper();
-            return om.writeValueAsString(records);
+            String returnString = om.writeValueAsString(allAccounts);
+
+            return Response.status(200).entity(returnString).build();
         }
-        catch(JsonProcessingException jpe) {
-            //TODO: do real logging
-            System.out.println("Exception processing JSON" + jpe.getMessage());
-            return "Error: " + jpe.getMessage();
+        catch (JsonProcessingException jpe) {
+            return Response.status(500).entity(jpe.getMessage()).build();
         }
-        finally {
-            if (em != null) {
-                em.close();
-            }
-        }
+
     }
 
     @Path("/{accountId}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public String getOneAccount(@PathParam("accountId") final String accountId) {
-        EntityManager em = null;
+    public Response getOneAccount(@PathParam("accountId") final String accountId) {
         try {
-            em = emf.createEntityManager();
-
-            AccountRecord ar = (AccountRecord) em.createQuery("Select a from AccountRecord a where a.id = '" + accountId + "'").getSingleResult();
+            Account account = dao.getAccount(accountId);
 
             ObjectMapper om = new ObjectMapper();
-            return om.writeValueAsString(ar);
+            String returnString = om.writeValueAsString(account);
+
+            return Response.status(200).entity(returnString).build();
         }
         catch(JsonProcessingException jpe) {
-            System.out.println("Exception processing JSON: " + jpe.getMessage());
-            return "Error: " + jpe.getMessage();
-        }
-        catch(NoResultException nre) {
-            //TODO: Probably shouldn't rely on catching an error here and handle this smoother
-            return null;
-        }
-        finally {
-            if (em != null) {
-                em.close();
-            }
+            return Response.status(500).entity(jpe.getMessage()).build();
         }
     }
 
@@ -93,32 +76,12 @@ public class AccountResource {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response addAccount(Account account) {
         if (account.getId() != null) {
-            return Response.status(400, "Use POST method if updating").build();
+            return Response.status(400).entity("Use POST method if updating").build();
         }
 
-        account.setId(UUID.randomUUID());
-
-        AccountRecord arToPersist = new AccountRecord(account.getId(), account);
-
-        EntityManager em = null;
-        try {
-            em = emf.createEntityManager();
-
-            em.getTransaction().begin();
-            em.persist(arToPersist);
-            em.getTransaction().commit();
-        }
-        catch(Exception ex) {
-            System.out.println(ex.getMessage());
-            return Response.status(500, ex.getMessage()).build();
-        }
-        finally {
-            if (em != null) {
-                em.close();
-            }
-        }
-
-        return Response.status(200).build();
+        String newId = dao.addAccount(account);
+        
+        return Response.status(200).entity(newId).build();
     }
 
     @Path("/{accountId}")
