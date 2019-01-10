@@ -2,6 +2,7 @@ package com.sixtey7.fjservice.rest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sixtey7.fjservice.model.Account;
 import com.sixtey7.fjservice.model.AccountRecord;
 
 import javax.enterprise.context.RequestScoped;
@@ -13,7 +14,9 @@ import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.util.List;
+import java.util.UUID;
 
 @Path("/accounts")
 @RequestScoped
@@ -83,6 +86,70 @@ public class AccountResource {
                 em.close();
             }
         }
+    }
+
+    @Path("")
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response addAccount(Account account) {
+        if (account.getId() != null) {
+            return Response.status(400, "Use POST method if updating").build();
+        }
+
+        account.setId(UUID.randomUUID());
+
+        AccountRecord arToPersist = new AccountRecord(account.getId(), account);
+
+        EntityManager em = null;
+        try {
+            em = emf.createEntityManager();
+
+            em.getTransaction().begin();
+            em.persist(arToPersist);
+            em.getTransaction().commit();
+        }
+        catch(Exception ex) {
+            System.out.println(ex.getMessage());
+            return Response.status(500, ex.getMessage()).build();
+        }
+        finally {
+            if (em != null) {
+                em.close();
+            }
+        }
+
+        return Response.status(200).build();
+    }
+
+    @Path("/{accountId}")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response updateAccount(@PathParam("accountId") final String accountId, final Account account) {
+        if (accountId == null) {
+            return Response.status(400, "ID is required as part of the path!").build();
+        }
+
+        AccountRecord arToPersist = new AccountRecord(UUID.fromString(accountId), account);
+
+        EntityManager em = null;
+        try {
+            em = emf.createEntityManager();
+
+            em.getTransaction().begin();
+            em.merge(arToPersist);
+            em.getTransaction().commit();
+        }
+        catch(Exception ex) {
+            return Response.status(500, ex.getMessage()).build();
+        }
+        finally {
+            if (em != null) {
+                em.close();
+            }
+        }
+
+        return Response.status(200).build();
+
     }
 
     @Path("/{accountId}")
