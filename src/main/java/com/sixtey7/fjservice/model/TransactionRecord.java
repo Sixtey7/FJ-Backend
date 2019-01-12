@@ -4,6 +4,7 @@ import com.sixtey7.fjservice.model.converter.TransactionConverter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.UUID;
 
 /**
  * Helper class to be used to interact with the database
@@ -26,6 +27,11 @@ public class TransactionRecord {
      * Don't want anyone hitting the default constructor
      */
     private TransactionRecord() { }
+
+    public TransactionRecord(UUID id, Transaction data) {
+        this.id = id.toString();
+        this.data = data;
+    }
 
     /**
      * Returns the id of the record
