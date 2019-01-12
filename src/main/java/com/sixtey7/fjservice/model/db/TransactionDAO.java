@@ -120,6 +120,10 @@ public class TransactionDAO {
         return returnVal;
     }
 
+    /**
+     * Deletes all of the transactions in the database
+     * @return integer capturing the number of records deleted
+     */
     public int deleteAllTransactions() {
         em.getTransaction().begin();
         int returnVal = em.createQuery("Delete from TransactionQuery t").executeUpdate();
