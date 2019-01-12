@@ -104,11 +104,6 @@ public class AccountDAO {
             System.out.println(ex.getMessage());
             return false;
         }
-        finally {
-            if (em != null) {
-                em.close();
-            }
-        }
 
         return true;
     }
@@ -133,7 +128,7 @@ public class AccountDAO {
     public int deleteAllAccounts() {
         em.getTransaction().begin();
         int returnVal = em.createQuery("Delete from AccountRecord a").executeUpdate();
-
+        em.getTransaction().commit();
         return returnVal;
     }
 
