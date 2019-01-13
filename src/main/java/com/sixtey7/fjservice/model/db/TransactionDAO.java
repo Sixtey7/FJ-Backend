@@ -33,7 +33,7 @@ public class TransactionDAO {
      * @return {@link List} containing all of the {@link Transaction} in the database
      */
     public List<Transaction> getAllTransactions() {
-        List<TransactionRecord> records = em.createQuery("Select t from TransactionRecord t").getResultList();
+        List<TransactionRecord> records = em.createQuery("Select t from TransactionRecord t", TransactionRecord.class).getResultList();
 
         List<Transaction> returnList = new ArrayList<>();
         for (TransactionRecord tr : records) {
@@ -50,7 +50,7 @@ public class TransactionDAO {
      */
     public Transaction getTransaction(String transactionId) {
         try {
-            TransactionRecord tr = (TransactionRecord) em.createQuery("Select t from TransactionRecord t where t.id = '" + transactionId + "'").getSingleResult();
+            TransactionRecord tr = em.createQuery("Select t from TransactionRecord t where t.id = '" + transactionId + "'", TransactionRecord.class).getSingleResult();
 
             return tr.getData();
         }
@@ -58,6 +58,14 @@ public class TransactionDAO {
             //TODO: Probably shouldn't rely on catching an error here and handle this smoother
             return null;
         }
+    }
+
+    public List<Transaction> getTransForAccount(final String accountId) {
+        List<TransactionRecord> records = em.createNativeQuery("Select * from Transactions t WHERE t.data->>'accountId' = '" + accountId + "'", TransactionRecord.class).getResultList();
+        List<Transaction> returnList = new ArrayList<>();
+        records.forEach(transactionRecord -> returnList.add(transactionRecord.getData()));
+
+        return returnList;
     }
 
     /**

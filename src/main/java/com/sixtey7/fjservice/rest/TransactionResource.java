@@ -64,6 +64,23 @@ public class TransactionResource {
         }
     }
 
+    @Path("/forAccount/{accountId}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getTransForAccount(@PathParam("accountId") final String accountId) {
+        List allTransactions = dao.getTransForAccount(accountId);
+
+        try {
+            ObjectMapper om = new ObjectMapper();
+            String returnString = om.writeValueAsString(allTransactions);
+
+            return Response.status(200).entity(returnString).build();
+        }
+        catch (JsonProcessingException jpe) {
+            return Response.status(500).entity(jpe.getMessage()).build();
+        }
+    }
+
     @Path("")
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)

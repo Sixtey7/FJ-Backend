@@ -36,9 +36,8 @@ public class AccountDAO {
         List<AccountRecord> records = em.createQuery("Select a from AccountRecord a", AccountRecord.class).getResultList();
 
         List<Account> returnList = new ArrayList<>();
-        for (AccountRecord ar : records) {
-            returnList.add(ar.getData());
-        }
+
+        records.forEach(accountRecord -> returnList.add(accountRecord.getData()));
 
         return returnList;
     }

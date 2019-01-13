@@ -1,24 +1,23 @@
 package com.sixtey7.fjservice.model;
 
-import javax.json.Json;
-import javax.json.JsonObject;
+import com.sixtey7.fjservice.model.converter.UUIDAdapter;
+
+import javax.json.bind.annotation.JsonbTypeAdapter;
 import java.time.Instant;
 import java.util.UUID;
 
 public class Transaction {
 
     private UUID transId;
+    @JsonbTypeAdapter(UUIDAdapter.class)
     private UUID accountId;
-    private String transName;
+    private String name;
     private Instant date;
     private Float amount;
     private TransType type;
     private String notes;
 
-    /**
-     * Masking the default constructor because we want to ensure the proper fields are provided
-     */
-    private Transaction() { }
+    public Transaction() { }
 
     public Transaction(final String name, final Instant date, final float amount, final UUID accountId) {
         this.transId = UUID.randomUUID();
@@ -45,12 +44,12 @@ public class Transaction {
         this.accountId = accountId;
     }
 
-    public String getTransName() {
-        return transName;
+    public String getName() {
+        return name;
     }
 
-    public void setTransName(String transName) {
-        this.transName = transName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Instant getDate() {

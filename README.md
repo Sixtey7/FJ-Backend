@@ -28,6 +28,8 @@ Eventually plan to leverage k8s to deploy several docker containers (Backend, Fr
     * psql -U fjuser fjdb
 * Create the Accounts table
     * CREATE TABLE Accounts (id VARCHAR PRIMARY KEY, data jsonb);
+* Create the Transactions table
+    * CREATE TABLE Transactions (id VARCHAR PRIMARY KEY, data jsonb);
 * Profit!
 
 ### Sample REST Requests
@@ -37,5 +39,13 @@ Eventually plan to leverage k8s to deploy several docker containers (Backend, Fr
 * Put in an Account
     * curl -XPUT -H "Content-type: application/json" -i -d '{"name":"test"}' http://localhost:8080/accounts
 
+### Transactions
+* Get All Transactions
+    * curl http://localhost:8080/transactions
+* Get For An Account
+    * curl -i  http://localhost:8080/transactions/forAccount/e31f6a71-0aab-44ba-96b0-b7d756aec187
+* Put in a Transaction
+    * curl -XPUT -H "Content-type: application/json" -i -d '{"accountId": "e31f6a71-0aab-44ba-96b0-b7d756aec187", "name":"Hello", "amount": 12345}' http://localhost:8080/transactions
+    
 ## References
 https://helidon.io/
