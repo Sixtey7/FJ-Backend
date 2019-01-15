@@ -14,13 +14,23 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
+/**
+ * RESTful Service used to creat and obtain data about transactions
+ */
 @Path("/transactions")
 @RequestScoped
 public class TransactionResource {
 
+    /**
+     * DAO object to be used to access the daatabase
+     */
     @Inject
     private TransactionDAO  dao;
 
+    /**
+     * REST service used to verify the Transaction Service is up and running
+     * @return {@link JsonObject} indicating the status of the service
+     */
     @Path("/healthz")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -30,6 +40,10 @@ public class TransactionResource {
                 .build();
     }
 
+    /**
+     * REST Service used to obtain all of the transactions in the database
+     * @return {@link Response} that contains all of the transaactions
+     */
     @Path("")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -47,6 +61,11 @@ public class TransactionResource {
         }
     }
 
+    /**
+     * REST Service used to obtain the details of a single transaction
+     * @param transId String containing the UUID of the transaction to get
+     * @return {@link Response} containing the details of the requested transaction
+     */
     @Path("/{transId}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -64,6 +83,11 @@ public class TransactionResource {
         }
     }
 
+    /**
+     * REST Service used to get all of the transactions tied to the specified account
+     * @param accountId String containing the UUID of the account to get transactions for
+     * @return {@link Response} containing the list of matching transactions
+     */
     @Path("/forAccount/{accountId}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -81,6 +105,11 @@ public class TransactionResource {
         }
     }
 
+    /**
+     * REST Service used to add a transaction to the database
+     * @param transaction The Details of the transaction to be deserialized into a {@link Transaction}
+     * @return {@link Response} containing the UUID of the newly created Transaction record
+     */
     @Path("")
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
@@ -94,6 +123,12 @@ public class TransactionResource {
         return Response.status(200).entity(newId).build();
     }
 
+    /**
+     * REST Service used to update a transaction
+     * @param transactionId String containing the UUID of the transaction to update
+     * @param transaction The details of the transaction to be deserialized into a {@link Transaction}
+     * @return {@link Response} containing whether the update was successful or not
+     */
     @Path("/{transactionId}")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -112,6 +147,11 @@ public class TransactionResource {
         }
     }
 
+    /**
+     * REST Service used to delete a transaction from the database
+     * @param transactionId String containing the UUID of the transaction to be deleted
+     * @return {@link Response} containing the number of records deleted
+     */
     @Path("/{transactionId}")
     @DELETE
     @Produces(MediaType.TEXT_PLAIN)
@@ -121,6 +161,10 @@ public class TransactionResource {
         return Response.status(200).entity(response).build();
     }
 
+    /**
+     * REST Service used to delete all transactions from the database
+     * @return {@link Response} containing the number of records deleted
+     */
     @Path("")
     @DELETE
     @Produces(MediaType.TEXT_PLAIN)
