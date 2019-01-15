@@ -14,8 +14,12 @@ import java.util.Set;
 @ApplicationPath("/")
 public class FJApplication extends Application {
 
+    /**
+     * Override the list of classes to add in our resources
+     * @return {@link Set} of {@link Class} containing the resource classes to load
+     */
     @Override
     public Set<Class<?>> getClasses() {
-        return CollectionsHelper.setOf(FJResource.class, AccountResource.class, TransactionResource.class);
+        return CollectionsHelper.setOf(AccountResource.class, TransactionResource.class);
     }
 }
