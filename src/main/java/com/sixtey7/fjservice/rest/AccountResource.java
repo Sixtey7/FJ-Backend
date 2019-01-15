@@ -14,14 +14,24 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
+/**
+ * Resource Class providing REST Interfaces for Accounts
+ */
 @Path("/accounts")
 @RequestScoped
 public class AccountResource {
 
+    /**
+     * DAO Used to interact with the database
+     */
     @Inject
     private AccountDAO dao;
 
-    @Path("/test")
+    /**
+     * Temporary interface used to verify resource is deployed correctly
+     * @return {@link JsonObject} with the status of the resource
+     */
+    @Path("/healthz")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public JsonObject test() {
@@ -30,7 +40,11 @@ public class AccountResource {
                 .build();
     }
 
-   @Path("")
+    /**
+     * REST Service to obtain all accounts in the database
+     * @return {@link Response} object containing all of the accounts
+     */
+    @Path("")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllAccounts() {
@@ -48,6 +62,11 @@ public class AccountResource {
 
     }
 
+    /**
+     * REST Service to obtain information about a single account
+     * @param accountId Strike containing the UUID of the account to get data for
+     * @return {@link Response} object containing the requested {@link Account} object
+     */
     @Path("/{accountId}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -65,6 +84,11 @@ public class AccountResource {
         }
     }
 
+    /**
+     * REST Service used to add an account to the database
+     * @param account {@link Account} to add
+     * @return {@link Response} object containing the UUID of the added account
+     */
     @Path("")
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
@@ -78,6 +102,12 @@ public class AccountResource {
         return Response.status(200).entity(newId).build();
     }
 
+    /**
+     * REST Service used to update the indicated account
+     * @param accountId String containing the UUID of the account to update
+     * @param account {@link Account} the account object to store
+     * @return {@link Response} object indicating if the update was successful
+     */
     @Path("/{accountId}")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -97,6 +127,11 @@ public class AccountResource {
 
     }
 
+    /**
+     * REST Service used to delete the indicated account
+     * @param accountId String containing the UUID of the account to delete
+     * @return {@link Response} object containing the number of records deleted
+     */
     @Path("/{accountId}")
     @DELETE
     @Produces(MediaType.TEXT_PLAIN)
@@ -106,6 +141,10 @@ public class AccountResource {
         return Response.status(200).entity(response).build();
     }
 
+    /**
+     * REST Service used to delete all of the accounts
+     * @return {@link Response} object containing the number of records deleted
+     */
     @Path("")
     @DELETE
     public Response deleteAll() {

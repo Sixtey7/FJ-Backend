@@ -60,6 +60,11 @@ public class TransactionDAO {
         }
     }
 
+    /**
+     * Gets all of the transactions that are tied to the specified record
+     * @param accountId String containing the account id to search for
+     * @return {@link List} of {@link Transaction} that match the specified account id
+     */
     public List<Transaction> getTransForAccount(final String accountId) {
         List<TransactionRecord> records = em.createNativeQuery("Select * from Transactions t WHERE t.data->>'accountId' = '" + accountId + "'", TransactionRecord.class).getResultList();
         List<Transaction> returnList = new ArrayList<>();
