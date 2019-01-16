@@ -10,10 +10,22 @@ import javax.persistence.Converter;
 import java.io.IOException;
 
 
+/**
+ * Converter class used to convert {@link Account} objects to and from Strings to be stored in the database
+ */
 @Converter
 public class AccountConverter implements AttributeConverter<Account, Object> {
+
+    /**
+     * Object Mapper to be used for the conversion
+     */
     private final ObjectMapper mapper = new ObjectMapper();
 
+    /**
+     * Converts the provided {@link Account} to a JSON String for the database
+     * @param account the Account object to convert
+     * @return String containg the JSON for the provided object
+     */
     @Override
     public String convertToDatabaseColumn(Account account) {
         try {
@@ -25,6 +37,11 @@ public class AccountConverter implements AttributeConverter<Account, Object> {
         }
     }
 
+    /**
+     * Converts the provided {@link PGobject} to an {@link Account}
+     * @param obj The PGobject to convert
+     * @return the Account object based on the provided data
+     */
     @Override
     public Account convertToEntityAttribute(Object obj ) {
         if (obj instanceof PGobject) {
