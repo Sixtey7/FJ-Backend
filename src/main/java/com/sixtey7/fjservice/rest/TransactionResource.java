@@ -123,6 +123,13 @@ public class TransactionResource {
         return Response.status(200).entity(newId).build();
     }
 
+    @Path("/import/{accountId}")
+    @PUT
+    @Consumes(MediaType.TEXT_PLAIN)
+    public Response importTransactions(@PathParam("accountId") final String accountId, final String transactionData) {
+        return Response.status(200).build();
+    }
+
     /**
      * REST Service used to update a transaction
      * @param transactionId String containing the UUID of the transaction to update
