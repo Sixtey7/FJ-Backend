@@ -122,7 +122,12 @@ public class TransactionResource {
 
         return Response.status(200).entity(newId).build();
     }
-
+    /**
+     * REST Service used to import transactions for an account
+     * @param accountId The id of the account to assign the transactions to
+     * @param transactionData The data to import (comma seperated)
+     * @return {@link Response} containing the number of transactions imported
+     */
     @Path("/import/{accountId}")
     @PUT
     @Consumes(MediaType.TEXT_PLAIN)
