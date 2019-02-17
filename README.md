@@ -32,6 +32,13 @@ Eventually plan to leverage k8s to deploy several docker containers (Backend, Fr
     * CREATE TABLE Transactions (id VARCHAR PRIMARY KEY, data jsonb);
 * Profit!
 
+### Build the Service
+* From the command line, run the command
+    * mvn package
+
+### Run the Service
+* From the command line, run the command
+    * java -jar target/fjservice.jar
 ### Sample REST Requests
 #### Accounts
 * Get All Accounts
