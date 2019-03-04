@@ -20,6 +20,8 @@ Eventually plan to leverage k8s to deploy several docker containers (Backend, Fr
 ### Create the Database
 * From the command line, run the command
     * sudo -u postgres createdb fjdb
+* Then create the user by running the command
+    * sudo -u postgres createuser fjuser
 * Then login as postgres to psql
     * sudo -u postgres psql postgres
 * Run the command

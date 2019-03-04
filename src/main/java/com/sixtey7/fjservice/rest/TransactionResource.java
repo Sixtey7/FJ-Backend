@@ -132,6 +132,37 @@ public class TransactionResource {
     @PUT
     @Consumes(MediaType.TEXT_PLAIN)
     public Response importTransactions(@PathParam("accountId") final String accountId, final String transactionData) {
+        /* Expected Order:
+        0 - Name
+        1 - Debit
+        2 - Credit
+        3 - Date
+        4 - Notes
+         */
+        System.out.println("Importing transactions for account: " + accountId);
+        System.out.println(transactionData);
+        String[] allLines = transactionData.split("\\n");
+        System.out.println("Found " + allLines.length + " lines!");
+
+
+        for (int lineCounter = 0; lineCounter < allLines.length; lineCounter++) {
+            String[] lineData = allLines[lineCounter].split(",", 5);
+            if (lineData.length == 5) {
+                System.out.println("Got 5 lines!");
+                System.out.println("Name: " + lineData[0]);
+                System.out.println("Debit: " + lineData[1]);
+                System.out.println("Credit: " + lineData[2]);
+                System.out.println("Date: " + lineData[3]);
+                System.out.println("Notes: " + lineData[4]);
+
+                //TODO: Build a real transaction
+            }
+            else {
+                System.out.println("Line Data has: " + lineData.length + " lines...");
+            }
+        }
+
+
         return Response.status(200).build();
     }
 
