@@ -156,6 +156,20 @@ public class TransactionResource {
                 System.out.println("Notes: " + lineData[4]);
 
                 //TODO: Build a real transaction
+                String name = lineData[0];
+                float amount = 0;
+                if (lineData[1] != "") {
+                    amount = -1 * Float.parseFloat(lineData[1]);
+                }
+                else if (lineData[2] != "") {
+                    amount = Float.parseFloat(lineData[2]);
+                }
+                else {
+                    System.out.println("Failed to parse an amount 1: " + lineData[1] + " 2: " + lineData[2]);
+                }
+
+                
+
             }
             else {
                 System.out.println("Line Data has: " + lineData.length + " lines...");
