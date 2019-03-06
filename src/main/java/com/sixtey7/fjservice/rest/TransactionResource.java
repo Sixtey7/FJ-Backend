@@ -12,6 +12,7 @@ import javax.json.JsonObject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.time.Instant;
 import java.util.List;
 
 /**
@@ -145,10 +146,10 @@ public class TransactionResource {
         System.out.println("Found " + allLines.length + " lines!");
 
 
-        for (int lineCounter = 0; lineCounter < allLines.length; lineCounter++) {
+        for (int lineCounter = 1; lineCounter < allLines.length; lineCounter++) {
             String[] lineData = allLines[lineCounter].split(",", 5);
             if (lineData.length == 5) {
-                System.out.println("Got 5 lines!");
+                System.out.println("------------------------------------------------------------------------------------");
                 System.out.println("Name: " + lineData[0]);
                 System.out.println("Debit: " + lineData[1]);
                 System.out.println("Credit: " + lineData[2]);
@@ -158,17 +159,44 @@ public class TransactionResource {
                 //TODO: Build a real transaction
                 String name = lineData[0];
                 float amount = 0;
-                if (lineData[1] != "") {
-                    amount = -1 * Float.parseFloat(lineData[1]);
+                if (!lineData[1].equals("")) {
+                    String value = lineData[1];
+                    if (value.charAt(0) == '$')
+                    {
+                        value = value.substring(1);
+                    }
+                    amount = -1 * Float.parseFloat(value);
                 }
-                else if (lineData[2] != "") {
-                    amount = Float.parseFloat(lineData[2]);
+                else if (!lineData[2].equals("")) {
+                    String value = lineData[2];
+                    if (value.charAt(0) == '$')
+                    {
+                        value = value.substring(1);
+                    }
+                    amount = Float.parseFloat(value);
                 }
                 else {
                     System.out.println("Failed to parse an amount 1: " + lineData[1] + " 2: " + lineData[2]);
                 }
 
-                
+                Instant transDate = Instant.now();
+
+                /* TODO Need to work on Date Parsing
+                if (!lineData[3].equals("")) {
+                    transDate = Instant.parse(lineData[3]);
+                }
+                */
+
+                String notes = lineData[4];
+
+                System.out.println("    ~~~~~");
+                System.out.println("Name: " + name);
+                System.out.println("Amount: " + amount);
+                System.out.println("Date: " + transDate);
+                System.out.println("Notes: " + notes);
+
+
+                System.out.println("------------------------------------------------------------------------------------");
 
             }
             else {
