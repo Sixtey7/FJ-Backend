@@ -21,9 +21,21 @@ public class Transaction {
 
     public Transaction(final String name, final Instant date, final float amount, final UUID accountId) {
         this.transId = UUID.randomUUID();
+        this.name = name;
         this.date = date;
         this.amount = amount;
         this.accountId = accountId;
+
+        this.type = TransType.FUTURE;
+    }
+
+    public Transaction(final String name, final Instant date, final float amount, final UUID accountId, final String notes) {
+        this.transId = UUID.randomUUID();
+        this.name = name;
+        this.date = date;
+        this.amount = amount;
+        this.accountId = accountId;
+        this.notes = notes;
 
         this.type = TransType.FUTURE;
     }

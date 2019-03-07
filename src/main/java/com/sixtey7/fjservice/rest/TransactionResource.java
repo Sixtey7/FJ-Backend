@@ -12,8 +12,12 @@ import javax.json.JsonObject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.List;
+import java.util.TimeZone;
+import java.util.UUID;
 
 /**
  * RESTful Service used to creat and obtain data about transactions
@@ -140,8 +144,13 @@ public class TransactionResource {
         3 - Date
         4 - Notes
          */
+
+        //Create a simple date format to help parse our date
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy");
+        sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+
         System.out.println("Importing transactions for account: " + accountId);
-        System.out.println(transactionData);
+
         String[] allLines = transactionData.split("\\n");
         System.out.println("Found " + allLines.length + " lines!");
 
@@ -156,7 +165,6 @@ public class TransactionResource {
                 System.out.println("Date: " + lineData[3]);
                 System.out.println("Notes: " + lineData[4]);
 
-                //TODO: Build a real transaction
                 String name = lineData[0];
                 float amount = 0;
                 if (!lineData[1].equals("")) {
@@ -181,11 +189,17 @@ public class TransactionResource {
 
                 Instant transDate = Instant.now();
 
-                /* TODO Need to work on Date Parsing
+
                 if (!lineData[3].equals("")) {
-                    transDate = Instant.parse(lineData[3]);
+                    System.out.println("Got the time: " + lineData[3]);
+                    try {
+                        transDate = sdf.parse(lineData[3]).toInstant();
+                    }
+                    catch (ParseException pe) {
+                        System.out.println("Failed to parse date: " + lineData[3]);
+                    }
                 }
-                */
+
 
                 String notes = lineData[4];
 
@@ -195,6 +209,9 @@ public class TransactionResource {
                 System.out.println("Date: " + transDate);
                 System.out.println("Notes: " + notes);
 
+
+                //TODO: This method really needs to take in a real UUID not an int
+                Transaction newTransaction = new Transaction(name, transDate, amount, UUID.randomUUID(), notes);
 
                 System.out.println("------------------------------------------------------------------------------------");
 
