@@ -3,6 +3,7 @@ package com.sixtey7.fjservice.rest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sixtey7.fjservice.model.Transaction;
+import com.sixtey7.fjservice.model.TransactionRecord;
 import com.sixtey7.fjservice.model.db.TransactionDAO;
 
 import javax.enterprise.context.RequestScoped;
@@ -15,6 +16,7 @@ import javax.ws.rs.core.Response;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
 import java.util.UUID;
@@ -155,6 +157,8 @@ public class TransactionResource {
         System.out.println("Found " + allLines.length + " lines!");
 
 
+        //TODO: This should be pulled out into its own class - not all in the resource
+        List<Transaction> transToImport = new ArrayList<>();
         for (int lineCounter = 1; lineCounter < allLines.length; lineCounter++) {
             String[] lineData = allLines[lineCounter].split(",", 5);
             if (lineData.length == 5) {
@@ -211,7 +215,8 @@ public class TransactionResource {
 
 
                 //TODO: This method really needs to take in a real UUID not an int
-                Transaction newTransaction = new Transaction(name, transDate, amount, UUID.randomUUID(), notes);
+                transToImport.add(new Transaction(name, transDate, amount, UUID.randomUUID(), notes));
+
 
                 System.out.println("------------------------------------------------------------------------------------");
 
@@ -221,6 +226,8 @@ public class TransactionResource {
             }
         }
 
+
+        dao.addAllTransactions(transToImport);
 
         return Response.status(200).build();
     }

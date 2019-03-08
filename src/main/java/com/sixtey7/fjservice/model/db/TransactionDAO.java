@@ -99,6 +99,22 @@ public class TransactionDAO {
     }
 
     /**
+     * Adds a list of transactions to the database
+     * @param transList - {@link List} of {@link Transaction} to be added
+     * @return {@link List} of Strings containing the UUIDs assigned to the transactions
+     */
+    public List<String> addAllTransactions(List<Transaction> transList) {
+        List<String> returnList = new ArrayList<>();
+
+        //TODO: I'm sure there's a better way to do this - but not a faster one!
+        for(Transaction thisTrans : transList) {
+            returnList.add(this.addTransaction(thisTrans));
+        }
+
+        return returnList;
+    }
+
+    /**
      * Updates the transaction matching the provided transaction id with the provided {@link Transaction}
      * @param transactionId String containing the UUID of the transaction
      * @param transToUpdate {@link Transaction} the transaction object to save
