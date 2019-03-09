@@ -155,7 +155,7 @@ public class TransactionDAO {
      */
     public int deleteAllTransactions() {
         em.getTransaction().begin();
-        int returnVal = em.createQuery("Delete from TransactionQuery t").executeUpdate();
+        int returnVal = em.createQuery("Delete from TransactionRecord t").executeUpdate();
         em.getTransaction().commit();
 
         return returnVal;
