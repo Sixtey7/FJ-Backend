@@ -139,6 +139,9 @@ public class TransactionResource {
     @PUT
     @Consumes(MediaType.TEXT_PLAIN)
     public Response importTransactions(@PathParam("accountId") final String accountId, final String transactionData) {
+        //parse the account id
+        UUID accountUUID = UUID.fromString(accountId);
+
         /* Expected Order:
         0 - Name
         1 - Debit
@@ -213,9 +216,7 @@ public class TransactionResource {
                 System.out.println("Date: " + transDate);
                 System.out.println("Notes: " + notes);
 
-
-                //TODO: This method really needs to take in a real UUID not an int
-                transToImport.add(new Transaction(name, transDate, amount, UUID.randomUUID(), notes));
+                transToImport.add(new Transaction(name, transDate, amount, accountUUID, notes));
 
 
                 System.out.println("------------------------------------------------------------------------------------");
