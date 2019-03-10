@@ -12,7 +12,7 @@ public class Transaction {
     @JsonbTypeAdapter(UUIDAdapter.class)
     private UUID accountId;
     private String name;
-    private Instant date;
+    private String date;
     private Float amount;
     private TransType type;
     private String notes;
@@ -22,7 +22,7 @@ public class Transaction {
     public Transaction(final String name, final Instant date, final float amount, final UUID accountId) {
         this.transId = UUID.randomUUID();
         this.name = name;
-        this.date = date;
+        this.date = date.toString();
         this.amount = amount;
         this.accountId = accountId;
 
@@ -32,7 +32,7 @@ public class Transaction {
     public Transaction(final String name, final Instant date, final float amount, final UUID accountId, final String notes) {
         this.transId = UUID.randomUUID();
         this.name = name;
-        this.date = date;
+        this.date = date.toString();
         this.amount = amount;
         this.accountId = accountId;
         this.notes = notes;
@@ -64,11 +64,11 @@ public class Transaction {
         this.name = name;
     }
 
-    public Instant getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(Instant date) {
+    public void setDate(String date) {
         this.date = date;
     }
 
