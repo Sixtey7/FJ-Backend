@@ -40,6 +40,16 @@ public class Transaction {
         this.type = TransType.FUTURE;
     }
 
+    public Transaction(final String name, final Instant date, final float amount, final UUID accountId, final String notes, TransType type) {
+        this.transId = UUID.randomUUID();
+        this.name = name;
+        this.date = date.toString();
+        this.amount = amount;
+        this.accountId = accountId;
+        this.notes = notes;
+        this.type = type;
+    }
+
     public UUID getTransId() {
         return transId;
     }
@@ -106,5 +116,4 @@ public class Transaction {
         CONFIRMED,
         FUTURE
     };
-
 }

@@ -89,13 +89,15 @@ public class CSVParser {
 
                 String notes = lineData[4];
 
+                Transaction.TransType type = determineTransType(transDate, notes);
+
                 System.out.println("    ~~~~~");
                 System.out.println("Name: " + name);
                 System.out.println("Amount: " + amount);
                 System.out.println("Date: " + transDate);
                 System.out.println("Notes: " + notes);
 
-                returnList.add(new Transaction(name, transDate, amount, accountUUID, notes));
+                returnList.add(new Transaction(name, transDate, amount, accountUUID, notes, type));
 
 
                 System.out.println("------------------------------------------------------------------------------------");
@@ -107,5 +109,22 @@ public class CSVParser {
         }
 
         return returnList;
+    }
+
+    private Transaction.TransType determineTransType(Instant transDate, String notesField) {
+        //Start by seeing if the transaction is in the past
+        if (transDate.isBefore(Instant.now())) {
+            return Transaction.TransType.CONFIRMED;
+        }
+
+        if (notesField.contains("est")) {
+            return Transaction.TransType.ESTIMATE;
+        }
+
+        if (notesField.contains("planned")) {
+            return Transaction.TransType.PLANNED;
+        }
+
+        return Transaction.TransType.FUTURE;
     }
 }
