@@ -111,6 +111,12 @@ public class CSVParser {
         return returnList;
     }
 
+    /**
+     * Determines the type of transaction being imported based on the date and comments in the notes
+     * @param transDate the date of the transaction as an {@link Instant}
+     * @param notesField the value of the notes field
+     * @return {@link Transaction.TransType} value for the transaction
+     */
     private Transaction.TransType determineTransType(Instant transDate, String notesField) {
         //Start by seeing if the transaction is in the past
         if (transDate.isBefore(Instant.now())) {
