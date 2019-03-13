@@ -6,6 +6,8 @@ import com.sixtey7.fjservice.model.Transaction;
 import com.sixtey7.fjservice.model.TransactionRecord;
 import com.sixtey7.fjservice.model.converter.CSVParser;
 import com.sixtey7.fjservice.model.db.TransactionDAO;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -29,6 +31,7 @@ import java.util.UUID;
 @RequestScoped
 public class TransactionResource {
 
+    private static final Logger LOGGER = LogManager.getLogger(TransactionResource.class);
     /**
      * DAO object to be used to access the daatabase
      */
@@ -43,6 +46,11 @@ public class TransactionResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public JsonObject healthz() {
+        LOGGER.debug("DEBUG");
+        LOGGER.info("INFO");
+        LOGGER.warn("WARN");
+        LOGGER.error("ERROR");
+
         return Json.createObjectBuilder()
                 .add("message", "Transaction Service Up and Running!")
                 .build();
