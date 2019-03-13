@@ -91,14 +91,13 @@ public class CSVParser {
 
                 Transaction.TransType type = determineTransType(transDate, notes);
 
+                //Note: I'm just assigning the transaction to an variable to log it below
+                Transaction newTrans = new Transaction(name, transDate, amount, accountUUID, notes, type);
+                returnList.add(newTrans);
+
                 System.out.println("    ~~~~~");
-                System.out.println("Name: " + name);
-                System.out.println("Amount: " + amount);
-                System.out.println("Date: " + transDate);
-                System.out.println("Notes: " + notes);
-
-                returnList.add(new Transaction(name, transDate, amount, accountUUID, notes, type));
-
+                System.out.println(newTrans.toString());
+                System.out.println("    ~~~~~");
 
                 System.out.println("------------------------------------------------------------------------------------");
 
