@@ -2,6 +2,8 @@ package com.sixtey7.fjservice.model.db;
 
 import com.sixtey7.fjservice.model.Transaction;
 import com.sixtey7.fjservice.model.TransactionRecord;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.enterprise.context.Dependent;
 import javax.persistence.EntityManager;
@@ -21,24 +23,34 @@ public class TransactionDAO {
     /**
      * EMF used to create the entity manager
      */
-    EntityManagerFactory emf = Persistence.createEntityManagerFactory("FJDB");
+    private EntityManagerFactory emf = Persistence.createEntityManagerFactory("FJDB");
 
     /**
      * Entity Manager to be used for this DAO
      */
-    EntityManager em = emf.createEntityManager();
+    private EntityManager em = emf.createEntityManager();
+
+    /**
+     * LOGGER to be used for this class
+     */
+    private static final Logger LOGGER = LogManager.getLogger(TransactionDAO.class);
 
     /**
      * Returns all of the transactions in the database
      * @return {@link List} containing all of the {@link Transaction} in the database
      */
     public List<Transaction> getAllTransactions() {
+        LOGGER.debug("Getting all transactions");
+
         List<TransactionRecord> records = em.createQuery("Select t from TransactionRecord t", TransactionRecord.class).getResultList();
 
         List<Transaction> returnList = new ArrayList<>();
         for (TransactionRecord tr : records) {
+            LOGGER.trace("Adding transaction record with id {}", tr.getId());
             returnList.add(tr.getData());
         }
+
+        LOGGER.debug("Returning {} transactions", returnList.size());
 
         return returnList;
     }
@@ -49,6 +61,7 @@ public class TransactionDAO {
      * @return {@link Transaction} object that was requested (null if not present)
      */
     public Transaction getTransaction(String transactionId) {
+        LOGGER.debug("Getting transaction for id {}", transactionId);
         try {
             TransactionRecord tr = em.createQuery("Select t from TransactionRecord t where t.id = '" + transactionId + "'", TransactionRecord.class).getSingleResult();
 
@@ -56,6 +69,7 @@ public class TransactionDAO {
         }
         catch (NoResultException nre) {
             //TODO: Probably shouldn't rely on catching an error here and handle this smoother
+            LOGGER.warn("Failed to find transaction with id: {}", transactionId);
             return null;
         }
     }
@@ -66,10 +80,14 @@ public class TransactionDAO {
      * @return {@link List} of {@link Transaction} that match the specified account id
      */
     public List<Transaction> getTransForAccount(final String accountId) {
+        LOGGER.debug("Getting all transactions for account {}", accountId);
+        @SuppressWarnings("unchecked")
         List<TransactionRecord> records = em.createNativeQuery("Select * from Transactions t WHERE t.data->>'accountId' = '" + accountId + "'", TransactionRecord.class).getResultList();
+        LOGGER.debug("Found {} transaction records", records.size());
         List<Transaction> returnList = new ArrayList<>();
         records.forEach(transactionRecord -> returnList.add(transactionRecord.getData()));
 
+        LOGGER.trace("Build {} transactions to return", returnList.size());
         return returnList;
     }
 
@@ -79,7 +97,10 @@ public class TransactionDAO {
      * @return String containing the UUID of the added transaction
      */
     public String addTransaction(Transaction transactionToAdd) {
+        LOGGER.debug("Adding a new transaction");
         UUID id = UUID.randomUUID();
+
+        LOGGER.debug("Generated the id {}" , id);
         transactionToAdd.setTransId(id);
 
         TransactionRecord trToPersist = new TransactionRecord(id, transactionToAdd);
@@ -90,8 +111,7 @@ public class TransactionDAO {
             em.getTransaction().commit();
         }
         catch (Exception ex) {
-            //TODO add logging
-            System.out.println(ex.getMessage());
+            LOGGER.error("Failed to persist transaction!", ex);
             return null;
         }
 
@@ -104,13 +124,17 @@ public class TransactionDAO {
      * @return {@link List} of Strings containing the UUIDs assigned to the transactions
      */
     public List<String> addAllTransactions(List<Transaction> transList) {
+        LOGGER.debug("Saving {} transactions", transList.size());
         List<String> returnList = new ArrayList<>();
 
-        //TODO: I'm sure there's a better way to do this - but not a faster one!
+        //TODO: I'm sure there's a better way to do this - but not a faster one to code!
         for(Transaction thisTrans : transList) {
-            returnList.add(this.addTransaction(thisTrans));
+            String assignedId = this.addTransaction(thisTrans);
+            LOGGER.trace("Adding {} to the array to return", assignedId);
+            returnList.add(assignedId);
         }
 
+        LOGGER.debug("Added {} transactions", returnList.size());
         return returnList;
     }
 
@@ -121,6 +145,7 @@ public class TransactionDAO {
      * @return boolean on whether or not the save was successful
      */
     public boolean updateTransaction(String transactionId, Transaction transToUpdate) {
+        LOGGER.debug("Updating transaction {}", transactionId);;
         TransactionRecord transactionToPersist = new TransactionRecord(UUID.fromString(transactionId), transToUpdate);
 
         try {
@@ -129,7 +154,7 @@ public class TransactionDAO {
             em.getTransaction().commit();
         }
         catch (Exception ex) {
-            System.out.println(ex.getMessage());
+            LOGGER.error("Failed to persist update of transaction", ex);
             return false;
         }
 
@@ -142,10 +167,12 @@ public class TransactionDAO {
      * @return integer capturing the number of records deleted (nominally 0 or 1)
      */
     public int deleteTransaction(String idToDelete) {
+        LOGGER.debug("Deleting transaction {}", idToDelete);
         em.getTransaction().begin();
         int returnVal = em.createQuery("Delete from TransactionRecord t where t.id = '" + idToDelete + ';').executeUpdate();
         em.getTransaction().commit();
 
+        LOGGER.debug("Deleted {} transactions", returnVal);
         return returnVal;
     }
 
@@ -154,10 +181,12 @@ public class TransactionDAO {
      * @return integer capturing the number of records deleted
      */
     public int deleteAllTransactions() {
+        LOGGER.debug("Deleting all transactions");
         em.getTransaction().begin();
         int returnVal = em.createQuery("Delete from TransactionRecord t").executeUpdate();
         em.getTransaction().commit();
 
+        LOGGER.debug("Deleted {} transactions", returnVal);
         return returnVal;
     }
 }

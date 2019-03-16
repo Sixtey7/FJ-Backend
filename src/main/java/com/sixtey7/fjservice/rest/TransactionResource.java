@@ -25,9 +25,11 @@ import java.util.UUID;
 @RequestScoped
 public class TransactionResource {
 
+    //create a logger for the class
     private static final Logger LOGGER = LogManager.getLogger(TransactionResource.class);
+
     /**
-     * DAO object to be used to access the daatabase
+     * DAO object to be used to access the database
      */
     @Inject
     private TransactionDAO  dao;
@@ -40,10 +42,7 @@ public class TransactionResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public JsonObject healthz() {
-        LOGGER.debug("DEBUG");
-        LOGGER.info("INFO");
-        LOGGER.warn("WARN");
-        LOGGER.error("ERROR");
+        LOGGER.info("Returning Health Check");
 
         return Json.createObjectBuilder()
                 .add("message", "Transaction Service Up and Running!")
@@ -58,8 +57,10 @@ public class TransactionResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllTransactions() {
+        LOGGER.info("Returning all transactions");
         List<Transaction> allTransactions = dao.getAllTransactions();
 
+        LOGGER.debug("Got {} transactions", allTransactions.size());
         try {
             ObjectMapper om = new ObjectMapper();
             String returnString = om.writeValueAsString(allTransactions);
@@ -80,6 +81,7 @@ public class TransactionResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getOneTransaction(@PathParam("transId") final String transId) {
+        LOGGER.info("Returning transaction details for id {}", transId);
         try {
             Transaction transaction = dao.getTransaction(transId);
 
@@ -102,8 +104,10 @@ public class TransactionResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getTransForAccount(@PathParam("accountId") final String accountId) {
+        LOGGER.info("Getting the transaction details for account id {}", accountId);
         List allTransactions = dao.getTransForAccount(accountId);
 
+        LOGGER.debug("Found {} transactions for account {}", allTransactions.size(), accountId);
         try {
             ObjectMapper om = new ObjectMapper();
             String returnString = om.writeValueAsString(allTransactions);
@@ -124,11 +128,15 @@ public class TransactionResource {
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     public Response addTransaction(Transaction transaction) {
+        LOGGER.info("Adding a new transaction!");
         if (transaction.getTransId() != null) {
+            LOGGER.warn("PUT method was called to add a new transaction for existing id {}", transaction.getTransId());
             return Response.status(400).entity("Use POST method if updating").build();
         }
 
         String newId = dao.addTransaction(transaction);
+
+        LOGGER.debug("Assigned ID {}", newId);
 
         return Response.status(200).entity(newId).build();
     }
@@ -142,12 +150,15 @@ public class TransactionResource {
     @PUT
     @Consumes(MediaType.TEXT_PLAIN)
     public Response importTransactions(@PathParam("accountId") final String accountId, final String transactionData) {
+        LOGGER.info("Importing transaction data for account id {}", accountId);
         //parse the account id
         UUID accountUUID = UUID.fromString(accountId);
 
         System.out.println("Importing transactions for account: " + accountId);
 
         List<Transaction> transToImport = new CSVParser().parseCSVFile(transactionData, accountUUID);
+
+        LOGGER.debug("Found {} transactions", transToImport.size());
 
         dao.addAllTransactions(transToImport);
 
@@ -164,7 +175,9 @@ public class TransactionResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response updateAccount(@PathParam("accountId") final String transactionId, final Transaction transaction) {
+        LOGGER.info("Updating transaction info for transaction id: {}" , transactionId);
         if (transactionId == null) {
+            LOGGER.warn("Transaction id was not provided to POST method!");
             return Response.status(400).entity("Transaction ID is required as part of the path!").build();
         }
 
@@ -174,6 +187,7 @@ public class TransactionResource {
             return Response.status(200).build();
         }
         else {
+            LOGGER.error("Failed to save the transaction update for transaction id {}", transactionId);
             return Response.status(200).entity("Failed to save transaction update!").build();
         }
     }
@@ -187,8 +201,10 @@ public class TransactionResource {
     @DELETE
     @Produces(MediaType.TEXT_PLAIN)
     public Response deleteTransaction(final String transactionId) {
+        LOGGER.info("Deleting transaction with id: {}", transactionId);
         int response = dao.deleteTransaction(transactionId);
 
+        LOGGER.debug("Deleting {} transactions", response);
         return Response.status(200).entity(response).build();
     }
 
@@ -200,7 +216,10 @@ public class TransactionResource {
     @DELETE
     @Produces(MediaType.TEXT_PLAIN)
     public Response deleteAllTransactions() {
+        LOGGER.info("Deleting all transactions!");
         int response = dao.deleteAllTransactions();
+
+        LOGGER.debug("Deleting {} transactions", response);
 
         return Response.status(200).entity(response).build();
     }

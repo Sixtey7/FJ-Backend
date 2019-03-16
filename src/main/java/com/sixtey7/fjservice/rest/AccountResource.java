@@ -104,7 +104,7 @@ public class AccountResource {
     public Response addAccount(Account account) {
         LOGGER.info("Adding a new account");
         if (account.getId() != null) {
-            LOGGER.warn("PUT method was called to for existing id {}", account.getId());
+            LOGGER.warn("PUT method was called to add a new account for existing id {}", account.getId());
             return Response.status(400).entity("Use POST method if updating").build();
         }
 
