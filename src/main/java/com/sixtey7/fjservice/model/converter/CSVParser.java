@@ -1,6 +1,8 @@
 package com.sixtey7.fjservice.model.converter;
 
 import com.sixtey7.fjservice.model.Transaction;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -16,12 +18,18 @@ import java.util.UUID;
 public class CSVParser {
 
     /**
+     * LOGGER for the class
+     */
+    private static final Logger LOGGER = LogManager.getLogger(CSVParser.class);
+
+    /**
      * Leads the parsing of the CSV Data
      * @param textFromCSV the text from the CSV
      * @param accountUUID A {@link UUID} for the account the transactions belong to
      * @return {@link List} of {@link Transaction} containing the parsed transaction
      */
     public List<Transaction> parseCSVFile(String textFromCSV, UUID accountUUID) {
+        LOGGER.info("Parsing a CSV File for import!");
         List<Transaction> returnList = new ArrayList<>();
 
         /* Expected Order:
@@ -38,18 +46,18 @@ public class CSVParser {
 
 
         String[] allLines = textFromCSV.split("\\n");
-        System.out.println("Found " + allLines.length + " lines!");
+        LOGGER.info("Found " + allLines.length + " lines!");
 
         List<Transaction> transToImport = new ArrayList<>();
         for (int lineCounter = 1; lineCounter < allLines.length; lineCounter++) {
             String[] lineData = allLines[lineCounter].split(",", 5);
             if (lineData.length == 5) {
-                System.out.println("------------------------------------------------------------------------------------");
-                System.out.println("Name: " + lineData[0]);
-                System.out.println("Debit: " + lineData[1]);
-                System.out.println("Credit: " + lineData[2]);
-                System.out.println("Date: " + lineData[3]);
-                System.out.println("Notes: " + lineData[4]);
+                LOGGER.debug("------------------------------------------------------------------------------------");
+                LOGGER.debug("Name: {}", lineData[0]);
+                LOGGER.debug("Debit: {}", lineData[1]);
+                LOGGER.debug("Credit: {}", lineData[2]);
+                LOGGER.debug("Date: {}", lineData[3]);
+                LOGGER.debug("Notes: {}", lineData[4]);
 
                 String name = lineData[0];
                 float amount = 0;
@@ -70,19 +78,19 @@ public class CSVParser {
                     amount = Float.parseFloat(value);
                 }
                 else {
-                    System.out.println("Failed to parse an amount 1: " + lineData[1] + " 2: " + lineData[2]);
+                    LOGGER.warn("Failed to parse an amount 1: {} 2: {}", lineData[1], lineData[2]);
                 }
 
                 Instant transDate = Instant.now();
 
 
                 if (!lineData[3].equals("")) {
-                    System.out.println("Got the time: " + lineData[3]);
+                    LOGGER.debug("Got the time: {}", lineData[3]);
                     try {
                         transDate = sdf.parse(lineData[3]).toInstant();
                     }
                     catch (ParseException pe) {
-                        System.out.println("Failed to parse date: " + lineData[3]);
+                        LOGGER.error("Failed to parse date: {}", lineData[3], pe);
                     }
                 }
 
@@ -95,15 +103,15 @@ public class CSVParser {
                 Transaction newTrans = new Transaction(name, transDate, amount, accountUUID, notes, type);
                 returnList.add(newTrans);
 
-                System.out.println("    ~~~~~");
-                System.out.println(newTrans.toString());
-                System.out.println("    ~~~~~");
+                LOGGER.debug("    ~~~~~");
+                LOGGER.debug(newTrans.toString());
+                LOGGER.debug("    ~~~~~");
 
-                System.out.println("------------------------------------------------------------------------------------");
+                LOGGER.debug("------------------------------------------------------------------------------------");
 
             }
             else {
-                System.out.println("Line Data has: " + lineData.length + " lines...");
+                LOGGER.warn("Line Data has: " + lineData.length + " lines...");
             }
         }
 
@@ -117,19 +125,24 @@ public class CSVParser {
      * @return {@link Transaction.TransType} value for the transaction
      */
     private Transaction.TransType determineTransType(Instant transDate, String notesField) {
+        LOGGER.debug("Determining type for date: {} and notesField {}", transDate, notesField);
         //Start by seeing if the transaction is in the past
         if (transDate.isBefore(Instant.now())) {
+            LOGGER.debug("Determined CONFIRMED");
             return Transaction.TransType.CONFIRMED;
         }
 
         if (notesField.contains("est")) {
+            LOGGER.debug("Determined ESTIMATE");
             return Transaction.TransType.ESTIMATE;
         }
 
         if (notesField.contains("planned")) {
+            LOGGER.debug("Determined PLANNED");
             return Transaction.TransType.PLANNED;
         }
 
+        LOGGER.debug("Determined FUTURE");
         return Transaction.TransType.FUTURE;
     }
 }

@@ -3,6 +3,8 @@ package com.sixtey7.fjservice.model.converter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sixtey7.fjservice.model.Account;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.postgresql.util.PGobject;
 
 import javax.persistence.AttributeConverter;
@@ -22,9 +24,14 @@ public class AccountConverter implements AttributeConverter<Account, Object> {
     private final ObjectMapper mapper = new ObjectMapper();
 
     /**
+     * Logger for the class
+     */
+    private static final Logger LOGGER = LogManager.getLogger(AccountConverter.class);
+
+    /**
      * Converts the provided {@link Account} to a JSON String for the database
      * @param account the Account object to convert
-     * @return String containg the JSON for the provided object
+     * @return String containing the JSON for the provided object
      */
     @Override
     public String convertToDatabaseColumn(Account account) {
@@ -32,7 +39,7 @@ public class AccountConverter implements AttributeConverter<Account, Object> {
             return mapper.writeValueAsString(account);
         }
         catch (JsonProcessingException jpe) {
-            System.out.println(jpe.getMessage());
+            LOGGER.error("Failed to convert to database column", jpe);
             throw new RuntimeException(jpe.getMessage());
         }
     }
@@ -56,11 +63,11 @@ public class AccountConverter implements AttributeConverter<Account, Object> {
                 return mapper.readValue(objAsString, Account.class);
             }
             catch(IOException ioe) {
-                System.out.println("ERROR!!" + ioe.getMessage());
+                LOGGER.error("Failed to convert to entity attribute", ioe);
                 throw new RuntimeException(ioe.getMessage());
             }
             catch (Exception ex) {
-                System.out.println("ERROR!!" + ex.getMessage());
+                LOGGER.error("Failed to convert to entity attribute", ex);
                 throw new RuntimeException(ex.getMessage());
             }
         }
