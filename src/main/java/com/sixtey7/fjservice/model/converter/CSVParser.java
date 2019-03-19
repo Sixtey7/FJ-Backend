@@ -48,7 +48,6 @@ public class CSVParser {
         String[] allLines = textFromCSV.split("\\n");
         LOGGER.info("Found " + allLines.length + " lines!");
 
-        List<Transaction> transToImport = new ArrayList<>();
         for (int lineCounter = 1; lineCounter < allLines.length; lineCounter++) {
             String[] lineData = allLines[lineCounter].split(",", 5);
             if (lineData.length == 5) {
