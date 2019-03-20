@@ -9,8 +9,6 @@ import org.postgresql.util.PGobject;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
-import java.io.IOException;
-
 
 /**
  * Converter class used to convert {@link Account} objects to and from Strings to be stored in the database
@@ -46,7 +44,7 @@ public class AccountConverter implements AttributeConverter<Account, Object> {
 
     /**
      * Converts the provided {@link PGobject} to an {@link Account}
-     * @param obj The PGobject to convert
+     * @param obj The {@link PGobject} to convert
      * @return the Account object based on the provided data
      */
     @Override
@@ -61,10 +59,6 @@ public class AccountConverter implements AttributeConverter<Account, Object> {
 
             try {
                 return mapper.readValue(objAsString, Account.class);
-            }
-            catch(IOException ioe) {
-                LOGGER.error("Failed to convert to entity attribute", ioe);
-                throw new RuntimeException(ioe.getMessage());
             }
             catch (Exception ex) {
                 LOGGER.error("Failed to convert to entity attribute", ex);
