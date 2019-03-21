@@ -8,9 +8,6 @@ Java Backend that interfaces with a PostgreSQL database through EclipseLink. Use
 
 Eventually plan to leverage k8s to deploy several docker containers (Backend, Frontend, Database, whatever else)
 
-## TODO 
-* For now, I've totally lifted the POM from Helidon.  I eventually want to turn this into a build.gradle and move over to gradle and take out what I don't want
-* Think about creating schemas for the Account/Transaction object so that the UI has access to the exact same datatype.
 
 ## Related Projects
 //TODO - will add when the latest and greatest frontend is started
@@ -58,10 +55,13 @@ Eventually plan to leverage k8s to deploy several docker containers (Backend, Fr
 * Import transactions
     * curl -XPUT -H "Content-Type: text/plain" -i --data-binary @<CSV_LOCATION> http://localhost:8080/transactions/import/<Account_UUID>
 
-##TODO
-[ ] Try Out Quarkas (https://quarkus.io/guides/getting-started-guide)
+## TODO
+- [ ] Try Out Quarkas (https://quarkus.io/guides/getting-started-guide)
+- [ ] Standardize to a single logging platform
+- [ ] For now, I've totally lifted the POM from Helidon.  I eventually want to turn this into a build.gradle and move over to gradle and take out what I don't want
+- [ ] Think about creating schemas for the Account/Transaction object so that the UI has access to the exact same datatype.
 
-[ ] Standardize to a single logging platform
+
 
 ## References
 https://helidon.io/
