@@ -57,5 +57,11 @@ Eventually plan to leverage k8s to deploy several docker containers (Backend, Fr
     * curl -XPUT -H "Content-type: application/json" -i -d '{"accountId": "e31f6a71-0aab-44ba-96b0-b7d756aec187", "name":"Hello", "amount": 12345}' http://localhost:8080/transactions
 * Import transactions
     * curl -XPUT -H "Content-Type: text/plain" -i --data-binary @<CSV_LOCATION> http://localhost:8080/transactions/import/<Account_UUID>
+
+##TODO
+[ ] Try Out Quarkas (https://quarkus.io/guides/getting-started-guide)
+
+[ ] Standardize to a single logging platform
+
 ## References
 https://helidon.io/
