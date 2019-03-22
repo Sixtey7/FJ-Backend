@@ -1,6 +1,13 @@
 package com.sixtey7.fjservice.model;
 
-import com.sixtey7.fjservice.model.converter.TransactionConverter;
+
+import com.vladmihalcea.hibernate.type.array.IntArrayType;
+import com.vladmihalcea.hibernate.type.array.StringArrayType;
+import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
+import com.vladmihalcea.hibernate.type.json.JsonStringType;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
+import org.hibernate.annotations.TypeDefs;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -11,6 +18,12 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "Transactions")
+@TypeDefs({
+        @TypeDef(name = "string-array", typeClass = StringArrayType.class),
+        @TypeDef(name = "int-array", typeClass = IntArrayType.class),
+        @TypeDef(name = "json", typeClass = JsonStringType.class),
+        @TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
+})
 public class TransactionRecord {
 
     @Id
@@ -19,8 +32,8 @@ public class TransactionRecord {
     private String id;
 
     @NotNull
-    @Column(name = "data")
-    @Convert(converter = TransactionConverter.class)
+    @Column(name = "data", columnDefinition = "jsonb")
+    @Type(type = "jsonb")
     private Transaction data;
 
     /**
