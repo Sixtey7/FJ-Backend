@@ -154,7 +154,7 @@ public class TransactionResource {
         //parse the account id
         UUID accountUUID = UUID.fromString(accountId);
 
-        System.out.println("Importing transactions for account: " + accountId);
+        LOGGER.debug("Importing transactions for account: " + accountId);
 
         List<Transaction> transToImport = new CSVParser().parseCSVFile(transactionData, accountUUID);
 
