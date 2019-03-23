@@ -1,6 +1,12 @@
 package com.sixtey7.fjservice.model;
 
-import com.sixtey7.fjservice.model.converter.AccountConverter;
+import com.vladmihalcea.hibernate.type.array.IntArrayType;
+import com.vladmihalcea.hibernate.type.array.StringArrayType;
+import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
+import com.vladmihalcea.hibernate.type.json.JsonStringType;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
+import org.hibernate.annotations.TypeDefs;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -11,6 +17,12 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "Accounts")
+@TypeDefs({
+        @TypeDef(name = "string-array", typeClass = StringArrayType.class),
+        @TypeDef(name = "int-array", typeClass = IntArrayType.class),
+        @TypeDef(name = "json", typeClass = JsonStringType.class),
+        @TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
+})
 public class AccountRecord {
 
     @Id
@@ -19,8 +31,8 @@ public class AccountRecord {
     private String id;
 
     @NotNull
-    @Column(name = "data")
-    @Convert(converter = AccountConverter.class)
+    @Column(name = "data", columnDefinition = "jsonb")
+    @Type(type = "jsonb")
     private Account data;
 
     /**

@@ -2,15 +2,14 @@ package com.sixtey7.fjservice.model.db;
 
 import com.sixtey7.fjservice.model.Account;
 import com.sixtey7.fjservice.model.AccountRecord;
-import com.sun.accessibility.internal.resources.accessibility;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
-import javax.persistence.Persistence;
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -22,14 +21,10 @@ import java.util.UUID;
 public class AccountDAO {
 
     /**
-     * EMF used to create the entity manager
-     */
-    EntityManagerFactory emf = Persistence.createEntityManagerFactory("FJDB");
-
-    /**
      * Entity Manager to be used for this DAO
      */
-    EntityManager em = emf.createEntityManager();
+    @Inject
+    EntityManager em;
 
     /**
      * LOGGER to be used for this class
@@ -76,6 +71,7 @@ public class AccountDAO {
      * @param accountToAdd {@link Account} the account object to add to the database
      * @return String containing the UUID of the added account
      */
+    @Transactional
     public String addAccount(Account accountToAdd) {
         LOGGER.debug("Adding a new account!");
 
@@ -86,9 +82,7 @@ public class AccountDAO {
         AccountRecord arToPersist = new AccountRecord(newId, accountToAdd);
 
         try {
-            em.getTransaction().begin();
             em.persist(arToPersist);
-            em.getTransaction().commit();
         }
         catch (Exception ex) {
             LOGGER.error("Failed to persist account", ex);
@@ -104,14 +98,13 @@ public class AccountDAO {
      * @param accountToUpdate {@link Account} the account object to save
      * @return boolean on whether or not the save was successful
      */
+    @Transactional
     public boolean updateAccount(String accountId, Account accountToUpdate) {
         LOGGER.debug("Updating account {}", accountId);
         AccountRecord accountToPersist = new AccountRecord(UUID.fromString(accountId), accountToUpdate);
 
         try {
-            em.getTransaction().begin();
             em.merge(accountToPersist);
-            em.getTransaction().commit();
         }
         catch(Exception ex) {
             LOGGER.error("Failed to persist update of account", ex);
@@ -126,11 +119,10 @@ public class AccountDAO {
      * @param idToDelete String containing the UUID of the account to delete
      * @return integer capturing the number of records deleted (nominally 0 or 1)
      */
+    @Transactional
     public int deleteAccount(String idToDelete) {
         LOGGER.debug("Deleting account {}", idToDelete);
-        em.getTransaction().begin();
         int returnVal = em.createQuery("Delete from AccountRecord a where a.id = '" + idToDelete + "';").executeUpdate();
-        em.getTransaction().commit();
 
         LOGGER.debug("Deleting {} accounts", returnVal);
         return returnVal;
@@ -140,11 +132,11 @@ public class AccountDAO {
      * Deletes all of the accounts in the database
      * @return integer capturing the number of records deleted
      */
+    @Transactional
     public int deleteAllAccounts() {
         LOGGER.debug("Deleting all accounts!");
-        em.getTransaction().begin();
+
         int returnVal = em.createQuery("Delete from AccountRecord a").executeUpdate();
-        em.getTransaction().commit();
 
         LOGGER.debug("Deleting {} accounts", returnVal);
         return returnVal;

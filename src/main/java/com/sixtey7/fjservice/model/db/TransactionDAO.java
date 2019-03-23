@@ -6,10 +6,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
-import javax.persistence.Persistence;
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -21,14 +21,10 @@ import java.util.UUID;
 public class TransactionDAO {
 
     /**
-     * EMF used to create the entity manager
-     */
-    private EntityManagerFactory emf = Persistence.createEntityManagerFactory("FJDB");
-
-    /**
      * Entity Manager to be used for this DAO
      */
-    private EntityManager em = emf.createEntityManager();
+    @Inject
+    private EntityManager em;
 
     /**
      * LOGGER to be used for this class
@@ -96,6 +92,7 @@ public class TransactionDAO {
      * @param transactionToAdd {@link Transaction} to be added to the database
      * @return String containing the UUID of the added transaction
      */
+    @Transactional
     public String addTransaction(Transaction transactionToAdd) {
         LOGGER.debug("Adding a new transaction");
         UUID id = UUID.randomUUID();
@@ -106,9 +103,7 @@ public class TransactionDAO {
         TransactionRecord trToPersist = new TransactionRecord(id, transactionToAdd);
 
         try {
-            em.getTransaction().begin();
             em.persist(trToPersist);
-            em.getTransaction().commit();
         }
         catch (Exception ex) {
             LOGGER.error("Failed to persist transaction!", ex);
@@ -144,14 +139,13 @@ public class TransactionDAO {
      * @param transToUpdate {@link Transaction} the transaction object to save
      * @return boolean on whether or not the save was successful
      */
+    @Transactional
     public boolean updateTransaction(String transactionId, Transaction transToUpdate) {
         LOGGER.debug("Updating transaction {}", transactionId);;
         TransactionRecord transactionToPersist = new TransactionRecord(UUID.fromString(transactionId), transToUpdate);
 
         try {
-            em.getTransaction().begin();
             em.merge(transactionToPersist);
-            em.getTransaction().commit();
         }
         catch (Exception ex) {
             LOGGER.error("Failed to persist update of transaction", ex);
@@ -166,11 +160,10 @@ public class TransactionDAO {
      * @param idToDelete String containing the UUID of the transaction to delete
      * @return integer capturing the number of records deleted (nominally 0 or 1)
      */
+    @Transactional
     public int deleteTransaction(String idToDelete) {
         LOGGER.debug("Deleting transaction {}", idToDelete);
-        em.getTransaction().begin();
         int returnVal = em.createQuery("Delete from TransactionRecord t where t.id = '" + idToDelete + ';').executeUpdate();
-        em.getTransaction().commit();
 
         LOGGER.debug("Deleted {} transactions", returnVal);
         return returnVal;
@@ -180,11 +173,10 @@ public class TransactionDAO {
      * Deletes all of the transactions in the database
      * @return integer capturing the number of records deleted
      */
+    @Transactional
     public int deleteAllTransactions() {
         LOGGER.debug("Deleting all transactions");
-        em.getTransaction().begin();
         int returnVal = em.createQuery("Delete from TransactionRecord t").executeUpdate();
-        em.getTransaction().commit();
 
         LOGGER.debug("Deleted {} transactions", returnVal);
         return returnVal;
