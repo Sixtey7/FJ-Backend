@@ -37,7 +37,7 @@ Eventually plan to leverage k8s to deploy several docker containers (Backend, Fr
 
 ### Run the Service
 * From the command line, run the command
-    * java -jar target/fjservice.jar
+    * java -jar target/fjservice-1.0-SNAPSHOT-runner.jar
 ### Sample REST Requests
 #### Accounts
 * Get All Accounts
