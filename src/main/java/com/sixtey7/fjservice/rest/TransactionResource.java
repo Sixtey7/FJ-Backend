@@ -129,6 +129,7 @@ public class TransactionResource {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response addTransaction(Transaction transaction) {
         LOGGER.info("Adding a new transaction!");
+
         if (transaction.getTransId() != null) {
             LOGGER.warn("PUT method was called to add a new transaction for existing id {}", transaction.getTransId());
             return Response.status(400).entity("Use POST method if updating").build();
@@ -174,7 +175,7 @@ public class TransactionResource {
     @Path("/{transactionId}")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response updateAccount(@PathParam("accountId") final String transactionId, final Transaction transaction) {
+    public Response updateAccount(Transaction transaction, @PathParam("transactionId") final String transactionId) {
         LOGGER.info("Updating transaction info for transaction id: {}" , transactionId);
         if (transactionId == null) {
             LOGGER.warn("Transaction id was not provided to POST method!");

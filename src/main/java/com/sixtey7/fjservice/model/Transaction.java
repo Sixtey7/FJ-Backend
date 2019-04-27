@@ -1,15 +1,11 @@
 package com.sixtey7.fjservice.model;
 
-import com.sixtey7.fjservice.model.converter.UUIDAdapter;
-
-import javax.json.bind.annotation.JsonbTypeAdapter;
 import java.time.Instant;
 import java.util.UUID;
 
 public class Transaction {
 
     private UUID transId;
-    @JsonbTypeAdapter(UUIDAdapter.class)
     private UUID accountId;
     private String name;
     private String date;
