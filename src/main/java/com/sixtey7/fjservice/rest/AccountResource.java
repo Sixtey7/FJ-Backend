@@ -15,6 +15,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Resource Class providing REST Interfaces for Accounts
@@ -111,7 +112,7 @@ public class AccountResource {
         String newId = dao.addAccount(account);
 
         LOGGER.debug("Assigned ID {}", newId);
-        
+
         return Response.status(200).entity(newId).build();
     }
 

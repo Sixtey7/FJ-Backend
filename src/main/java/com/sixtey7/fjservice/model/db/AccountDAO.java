@@ -122,7 +122,7 @@ public class AccountDAO {
     @Transactional
     public int deleteAccount(String idToDelete) {
         LOGGER.debug("Deleting account {}", idToDelete);
-        int returnVal = em.createQuery("Delete from AccountRecord a where a.id = '" + idToDelete + "';").executeUpdate();
+        int returnVal = em.createQuery("Delete from AccountRecord a where a.id = '" + idToDelete + "'").executeUpdate();
 
         LOGGER.debug("Deleting {} accounts", returnVal);
         return returnVal;

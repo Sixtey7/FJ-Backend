@@ -163,7 +163,7 @@ public class TransactionDAO {
     @Transactional
     public int deleteTransaction(String idToDelete) {
         LOGGER.debug("Deleting transaction {}", idToDelete);
-        int returnVal = em.createQuery("Delete from TransactionRecord t where t.id = '" + idToDelete + ';').executeUpdate();
+        int returnVal = em.createQuery("Delete from TransactionRecord t where t.id = '" + idToDelete + "'").executeUpdate();
 
         LOGGER.debug("Deleted {} transactions", returnVal);
         return returnVal;
