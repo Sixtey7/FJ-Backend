@@ -98,7 +98,7 @@ public class TransactionDAO {
         UUID id = UUID.randomUUID();
 
         LOGGER.debug("Generated the id {}" , id);
-        transactionToAdd.setTransId(id);
+        transactionToAdd.setId(id);
 
         TransactionRecord trToPersist = new TransactionRecord(id, transactionToAdd);
 

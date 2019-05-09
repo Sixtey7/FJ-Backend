@@ -130,8 +130,8 @@ public class TransactionResource {
     public Response addTransaction(Transaction transaction) {
         LOGGER.info("Adding a new transaction!");
 
-        if (transaction.getTransId() != null) {
-            LOGGER.warn("PUT method was called to add a new transaction for existing id {}", transaction.getTransId());
+        if (transaction.getId() != null) {
+            LOGGER.warn("PUT method was called to add a new transaction for existing id {}", transaction.getId());
             return Response.status(400).entity("Use POST method if updating").build();
         }
 
@@ -201,7 +201,7 @@ public class TransactionResource {
     @Path("/{transactionId}")
     @DELETE
     @Produces(MediaType.TEXT_PLAIN)
-    public Response deleteTransaction(final String transactionId) {
+    public Response deleteTransaction(@PathParam("transactionId") final String transactionId) {
         LOGGER.info("Deleting transaction with id: {}", transactionId);
         int response = dao.deleteTransaction(transactionId);
 

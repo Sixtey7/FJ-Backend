@@ -5,7 +5,7 @@ import java.util.UUID;
 
 public class Transaction {
 
-    private UUID transId;
+    private UUID id;
     private UUID accountId;
     private String name;
     private String date;
@@ -16,7 +16,7 @@ public class Transaction {
     public Transaction() { }
 
     public Transaction(final String name, final Instant date, final float amount, final UUID accountId) {
-        this.transId = UUID.randomUUID();
+        this.id = UUID.randomUUID();
         this.name = name;
         this.date = date.toString();
         this.amount = amount;
@@ -26,7 +26,7 @@ public class Transaction {
     }
 
     public Transaction(final String name, final Instant date, final float amount, final UUID accountId, final String notes) {
-        this.transId = UUID.randomUUID();
+        this.id = UUID.randomUUID();
         this.name = name;
         this.date = date.toString();
         this.amount = amount;
@@ -37,7 +37,7 @@ public class Transaction {
     }
 
     public Transaction(final String name, final Instant date, final float amount, final UUID accountId, final String notes, TransType type) {
-        this.transId = UUID.randomUUID();
+        this.id = UUID.randomUUID();
         this.name = name;
         this.date = date.toString();
         this.amount = amount;
@@ -46,12 +46,12 @@ public class Transaction {
         this.type = type;
     }
 
-    public UUID getTransId() {
-        return transId;
+    public UUID getId() {
+        return id;
     }
 
-    public void setTransId(UUID transId) {
-        this.transId = transId;
+    public void setId(UUID id) {
+        this.id = id;
     }
 
     public UUID getAccountId() {
@@ -123,7 +123,7 @@ public class Transaction {
 
         //Trans Id
         sb.append("Trans Id: ");
-        sb.append(this.transId.toString());
+        sb.append(this.id.toString());
         sb.append("\n");
 
         //Account Id
