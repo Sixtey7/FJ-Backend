@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sixtey7.fjservice.model.Account;
 import com.sixtey7.fjservice.model.db.AccountDAO;
+import com.sixtey7.fjservice.utils.AccountHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -15,7 +16,6 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Resource Class providing REST Interfaces for Accounts
@@ -32,6 +32,12 @@ public class AccountResource {
      */
     @Inject
     private AccountDAO dao;
+
+    /**
+     * Instance of account helper to be used
+     */
+    @Inject
+    private AccountHelper acctHelper;
 
     /**
      * Temporary interface used to verify resource is deployed correctly
@@ -92,6 +98,19 @@ public class AccountResource {
         catch(JsonProcessingException jpe) {
             return Response.status(500).entity(jpe.getMessage()).build();
         }
+    }
+
+    @Path("/updateBalanceForAccount/{accountId}")
+    @GET
+    public Response updateBalanceForAccount(@PathParam("accountId") final String accountId) {
+        LOGGER.info("Updating balance for the account {}", accountId);
+
+        acctHelper.updateBalanceForAccount(accountId);
+
+        LOGGER.debug("Finished updating transactions");
+
+        return Response.status(200).build();
+
     }
 
     /**

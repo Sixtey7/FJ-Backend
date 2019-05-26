@@ -1,9 +1,13 @@
 package com.sixtey7.fjservice.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import javax.persistence.Transient;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.UUID;
 
-public class Transaction {
+public class Transaction implements Comparable<Transaction> {
 
     private UUID id;
     private UUID accountId;
@@ -78,6 +82,18 @@ public class Transaction {
         this.date = date;
     }
 
+    @Transient
+    @JsonIgnore
+    public Instant getDateAsInstant() {
+        return Instant.parse(date);
+    }
+
+    @Transient
+    @JsonIgnore
+    public LocalDate getDateAsLocalDT() {
+        return LocalDate.parse(date);
+    }
+
     public Float getAmount() {
         return amount;
     }
@@ -100,6 +116,11 @@ public class Transaction {
 
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    @Override
+    public int compareTo(Transaction o) {
+        return getDateAsInstant().compareTo(o.getDateAsInstant());
     }
 
     /**
