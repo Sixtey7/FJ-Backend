@@ -3,7 +3,6 @@ package com.sixtey7.fjservice.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.Transient;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -19,7 +18,7 @@ public class Transaction implements Comparable<Transaction> {
 
     public Transaction() { }
 
-    public Transaction(final String name, final Instant date, final float amount, final UUID accountId) {
+    public Transaction(final String name, final LocalDate date, final float amount, final UUID accountId) {
         this.id = UUID.randomUUID();
         this.name = name;
         this.date = date.toString();
@@ -29,7 +28,7 @@ public class Transaction implements Comparable<Transaction> {
         this.type = TransType.FUTURE;
     }
 
-    public Transaction(final String name, final Instant date, final float amount, final UUID accountId, final String notes) {
+    public Transaction(final String name, final LocalDate date, final float amount, final UUID accountId, final String notes) {
         this.id = UUID.randomUUID();
         this.name = name;
         this.date = date.toString();
@@ -40,7 +39,7 @@ public class Transaction implements Comparable<Transaction> {
         this.type = TransType.FUTURE;
     }
 
-    public Transaction(final String name, final Instant date, final float amount, final UUID accountId, final String notes, TransType type) {
+    public Transaction(final String name, final LocalDate date, final float amount, final UUID accountId, final String notes, TransType type) {
         this.id = UUID.randomUUID();
         this.name = name;
         this.date = date.toString();
@@ -84,12 +83,6 @@ public class Transaction implements Comparable<Transaction> {
 
     @Transient
     @JsonIgnore
-    public Instant getDateAsInstant() {
-        return Instant.parse(date);
-    }
-
-    @Transient
-    @JsonIgnore
     public LocalDate getDateAsLocalDT() {
         return LocalDate.parse(date);
     }
@@ -120,7 +113,7 @@ public class Transaction implements Comparable<Transaction> {
 
     @Override
     public int compareTo(Transaction o) {
-        return getDateAsInstant().compareTo(o.getDateAsInstant());
+        return getDateAsLocalDT().compareTo(o.getDateAsLocalDT());
     }
 
     /**

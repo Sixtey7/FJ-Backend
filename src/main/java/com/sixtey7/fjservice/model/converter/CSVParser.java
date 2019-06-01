@@ -4,12 +4,10 @@ import com.sixtey7.fjservice.model.Transaction;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.TimeZone;
 import java.util.UUID;
 
 /**
@@ -41,9 +39,7 @@ public class CSVParser {
          */
 
         //Create a simple date format to help parse our date
-        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy");
-        sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
-
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("M/d/yy");
 
         String[] allLines = textFromCSV.split("\\n");
         LOGGER.info("Found " + allLines.length + " lines!");
@@ -80,17 +76,11 @@ public class CSVParser {
                     LOGGER.warn("Failed to parse an amount 1: {} 2: {}", lineData[1], lineData[2]);
                 }
 
-                Instant transDate = Instant.now();
-
+                LocalDate transDate = LocalDate.now();
 
                 if (!lineData[3].equals("")) {
                     LOGGER.debug("Got the time: {}", lineData[3]);
-                    try {
-                        transDate = sdf.parse(lineData[3]).toInstant();
-                    }
-                    catch (ParseException pe) {
-                        LOGGER.error("Failed to parse date: {}", lineData[3], pe);
-                    }
+                    transDate = LocalDate.parse(lineData[3], dtf);
                 }
 
 
@@ -119,14 +109,14 @@ public class CSVParser {
 
     /**
      * Determines the type of transaction being imported based on the date and comments in the notes
-     * @param transDate the date of the transaction as an {@link Instant}
+     * @param transDate the date of the transaction as an {@link LocalDate}
      * @param notesField the value of the notes field
      * @return {@link Transaction.TransType} value for the transaction
      */
-    private Transaction.TransType determineTransType(Instant transDate, String notesField) {
+    private Transaction.TransType determineTransType(LocalDate transDate, String notesField) {
         LOGGER.debug("Determining type for date: {} and notesField {}", transDate, notesField);
         //Start by seeing if the transaction is in the past
-        if (transDate.isBefore(Instant.now())) {
+        if (transDate.isBefore(LocalDate.now())) {
             LOGGER.debug("Determined CONFIRMED");
             return Transaction.TransType.CONFIRMED;
         }
