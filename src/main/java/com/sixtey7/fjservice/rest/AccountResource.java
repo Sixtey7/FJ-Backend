@@ -145,7 +145,7 @@ public class AccountResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response updateAccount(@PathParam("accountId") final String accountId, final Account account) {
-        LOGGER.info("Updating account info for account id: {}", account);
+        LOGGER.info("Updating account info for account id: {}", accountId);
         if (accountId == null) {
             LOGGER.warn("Account id was not provided to POST method");
             return Response.status(400).entity("ID is required as part of the path!").build();
