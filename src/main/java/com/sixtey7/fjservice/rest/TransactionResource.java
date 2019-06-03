@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sixtey7.fjservice.model.Transaction;
 import com.sixtey7.fjservice.model.converter.CSVParser;
 import com.sixtey7.fjservice.model.db.TransactionDAO;
+import com.sixtey7.fjservice.utils.TransHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -33,6 +34,12 @@ public class TransactionResource {
      */
     @Inject
     private TransactionDAO  dao;
+
+    /**
+     * Helper class used to massage transactions
+     */
+    @Inject
+    private TransHelper transHelper;
 
     /**
      * REST service used to verify the Transaction Service is up and running
@@ -135,6 +142,9 @@ public class TransactionResource {
             return Response.status(400).entity("Use POST method if updating").build();
         }
 
+        //going to get an iso date from the frontend - fix it
+        transHelper.fixDateForTrans(transaction);
+
         String newId = dao.addTransaction(transaction);
 
         LOGGER.debug("Assigned ID {}", newId);
@@ -181,6 +191,12 @@ public class TransactionResource {
             LOGGER.warn("Transaction id was not provided to POST method!");
             return Response.status(400).entity("Transaction ID is required as part of the path!").build();
         }
+
+
+        LOGGER.debug("Received transaction details\n{}", transaction.toString());
+
+        //going to get an ISO date from the frontend, let's fix that
+        transHelper.fixDateForTrans(transaction);
 
         boolean result = dao.updateTransaction(transactionId, transaction);
 
