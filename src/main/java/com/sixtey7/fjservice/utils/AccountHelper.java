@@ -37,16 +37,26 @@ public class AccountHelper {
             return false;
         }
 
-        accountToUpdate = updateBalanceForAccount(accountToUpdate);
+        if (!accountToUpdate.getDynamic()) {
 
-        return accountDAO.updateAccount(accountId, accountToUpdate);
+            accountToUpdate = updateBalanceForAccount(accountToUpdate);
+
+            return accountDAO.updateAccount(accountId, accountToUpdate);
+        }
+
+        // return true - nothing was updated, but nothing should have been
+        return true;
     }
 
     public Account updateBalanceForAccount(Account accountToUpdate) {
-        List<Transaction> txList = transDAO.getTransForAccount(accountToUpdate.getId().toString());
+        if (!accountToUpdate.getDynamic()) {
+            List<Transaction> txList = transDAO.getTransForAccount(accountToUpdate.getId().toString());
 
-        LOGGER.info("Got {} transactions for account {}", txList.size(), accountToUpdate.getId().toString());
-        return updateBalanceForAccount(accountToUpdate, txList);
+            LOGGER.info("Got {} transactions for account {}", txList.size(), accountToUpdate.getId().toString());
+            return updateBalanceForAccount(accountToUpdate, txList);
+        }
+
+        return accountToUpdate;
     }
 
     private Account updateBalanceForAccount(Account accountToUpdate, List<Transaction> txList) {
@@ -58,10 +68,10 @@ public class AccountHelper {
 
         float balance = 0;
         for (Transaction thisTrans : txList) {
-            if (!(now.isAfter(thisTrans.getDateAsLocalDT()))) {
+            if (!(thisTrans.getDateAsLocalDT().isAfter(now))) {
                 LOGGER.debug("Balance before {}", balance);
                 balance += thisTrans.getAmount();
-                LOGGER.debug("Balance aferr {}", balance);
+                LOGGER.debug("Balance after {}", balance);
             }
             else {
                 LOGGER.debug("Breaking!");
