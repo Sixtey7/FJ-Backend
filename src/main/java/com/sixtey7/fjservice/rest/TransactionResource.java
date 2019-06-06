@@ -188,9 +188,14 @@ public class TransactionResource {
 
         dao.addAllTransactions(transToImport);
 
-        return Response.status(200).build();
+        return Response.status(200).entity(transToImport.size()).build();
     }
 
+    /**
+     * REST Service used to import transactions into a new account
+     * @param transactionData The data to import (comma separated)
+     * @return {@link Response} containing the UUID of the created account
+     */
     @Path("/import")
     @PUT
     @Consumes(MediaType.TEXT_PLAIN)
@@ -201,7 +206,7 @@ public class TransactionResource {
         newAccount.setDynamic(false);
         newAccount.setName("Imported");
         newAccount.setNotes("Imported from a CSV Party");
-        
+
         List<Transaction> transToImport = new CSVParser().parseCSVFile(transactionData, newAccount.getId());
 
         LOGGER.debug("Found {} transactions", transToImport.size());
@@ -212,7 +217,7 @@ public class TransactionResource {
 
         acctDao.updateAccount(newAccount.getId().toString(), newAccount);
 
-        return Response.status(200).build();
+        return Response.status(200).entity(newAccount.getId().toString()).build();
 
 
 
