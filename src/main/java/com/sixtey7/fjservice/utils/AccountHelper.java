@@ -70,6 +70,7 @@ public class AccountHelper {
         for (Transaction thisTrans : txList) {
             if (!(thisTrans.getDateAsLocalDT().isAfter(now))) {
                 LOGGER.debug("Balance before {}", balance);
+                LOGGER.debug("Amount {}", thisTrans.getAmount());
                 balance += thisTrans.getAmount();
                 LOGGER.debug("Balance after {}", balance);
             }

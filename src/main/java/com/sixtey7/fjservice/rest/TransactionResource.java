@@ -2,9 +2,12 @@ package com.sixtey7.fjservice.rest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sixtey7.fjservice.model.Account;
 import com.sixtey7.fjservice.model.Transaction;
 import com.sixtey7.fjservice.model.converter.CSVParser;
+import com.sixtey7.fjservice.model.db.AccountDAO;
 import com.sixtey7.fjservice.model.db.TransactionDAO;
+import com.sixtey7.fjservice.utils.AccountHelper;
 import com.sixtey7.fjservice.utils.TransHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,6 +37,18 @@ public class TransactionResource {
      */
     @Inject
     private TransactionDAO  dao;
+
+    /**
+     * DAO object for accounts
+     */
+    @Inject
+    private AccountDAO acctDao;
+
+    /**
+     * Helper class used to manage accounts
+     */
+    @Inject
+    private AccountHelper acctHelper;
 
     /**
      * Helper class used to massage transactions
@@ -174,6 +189,33 @@ public class TransactionResource {
         dao.addAllTransactions(transToImport);
 
         return Response.status(200).build();
+    }
+
+    @Path("/import")
+    @PUT
+    @Consumes(MediaType.TEXT_PLAIN)
+    public Response importTransactionsForNewAccount(final String transactionData) {
+        LOGGER.info("Importing transactions data for new account");
+
+        Account newAccount = new Account("Imported");
+        newAccount.setDynamic(false);
+        newAccount.setName("Imported");
+        newAccount.setNotes("Imported from a CSV Party");
+        
+        List<Transaction> transToImport = new CSVParser().parseCSVFile(transactionData, newAccount.getId());
+
+        LOGGER.debug("Found {} transactions", transToImport.size());
+
+        dao.addAllTransactions(transToImport);
+
+        acctHelper.updateBalanceForAccount(newAccount);
+
+        acctDao.updateAccount(newAccount.getId().toString(), newAccount);
+
+        return Response.status(200).build();
+
+
+
     }
 
     /**
