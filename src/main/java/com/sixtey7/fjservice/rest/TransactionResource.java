@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sixtey7.fjservice.model.Account;
 import com.sixtey7.fjservice.model.Transaction;
+import com.sixtey7.fjservice.model.converter.CSVGenerator;
 import com.sixtey7.fjservice.model.converter.CSVParser;
 import com.sixtey7.fjservice.model.db.AccountDAO;
 import com.sixtey7.fjservice.model.db.TransactionDAO;
@@ -55,6 +56,12 @@ public class TransactionResource {
      */
     @Inject
     private TransHelper transHelper;
+
+    /**
+     * Helper class used to generate csv data
+     */
+    @Inject
+    private CSVGenerator csvGenerator;
 
     /**
      * REST service used to verify the Transaction Service is up and running
@@ -218,9 +225,17 @@ public class TransactionResource {
         acctDao.updateAccount(newAccount.getId().toString(), newAccount);
 
         return Response.status(200).entity(newAccount.getId().toString()).build();
+    }
 
+    @Path("/csvFile")
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response generateCSVFile() {
+        LOGGER.info("Generating a CSV File for all transactions");
 
+        String returnData = csvGenerator.generateCSVForAllTxs();
 
+        return Response.status(200).entity(returnData).build();
     }
 
     /**

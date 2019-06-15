@@ -12,7 +12,9 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.time.LocalDate;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Dependent
 public class AccountHelper {
@@ -84,6 +86,17 @@ public class AccountHelper {
         accountToUpdate.setAmount(balance);
 
         return accountToUpdate;
+
+    }
+
+    public Map<String, String> buildIdNameMap(List<Account> accountsToMap) {
+        Map<String, String> returnMap = new HashMap<>();
+
+        for (Account acct : accountsToMap) {
+            returnMap.put(acct.getId().toString(), acct.getName());
+        }
+
+        return returnMap;
 
     }
 }
