@@ -16,6 +16,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Helper class for dealing with {@link Account objects}
+ */
 @Dependent
 public class AccountHelper {
 
@@ -24,12 +27,23 @@ public class AccountHelper {
     private static final Logger LOGGER = LogManager.getLogger(AccountResource.class);
 
 
+    /**
+     * DAO used for handling {@link Transaction} objects
+     */
     @Inject
     TransactionDAO transDAO;
 
+    /**
+     * DAO for {@link Account} objects
+     */
     @Inject
     AccountDAO accountDAO;
 
+    /**
+     * Kicks off the calculation of the balance for the specified account
+     * @param accountId a {@link String} capturing the UUID of the account to update
+     * @return boolean indicating if the balance was successfully updated
+     */
     public boolean updateBalanceForAccount(String accountId) {
         LOGGER.info("Updating balance for account with id {}", accountId);
         Account accountToUpdate = accountDAO.getAccount(accountId);
@@ -50,6 +64,11 @@ public class AccountHelper {
         return true;
     }
 
+    /**
+     * Kicks off the calculation of the balance for the provided account
+     * @param accountToUpdate {@link Account} to be updated
+     * @return {@link Account} that has had its balance updated
+     */
     public Account updateBalanceForAccount(Account accountToUpdate) {
         if (!accountToUpdate.getDynamic()) {
             List<Transaction> txList = transDAO.getTransForAccount(accountToUpdate.getId().toString());
@@ -61,6 +80,12 @@ public class AccountHelper {
         return accountToUpdate;
     }
 
+    /**
+     * Method that does the actual calculation of the accounts balance
+     * @param accountToUpdate {@link Account} to have its balance updated
+     * @param txList {@link List} of {@link Transaction} pertaining to the account
+     * @return {@link Account} that has the balance updated
+     */
     private Account updateBalanceForAccount(Account accountToUpdate, List<Transaction> txList) {
 
         //first, sort the list of transactions
@@ -89,6 +114,11 @@ public class AccountHelper {
 
     }
 
+    /**
+     * Builds a map of Account Ids (in String form) to Account Name
+     * @param accountsToMap {@link List} of {@link Account} objects to build the map from
+     * @return {@link Map} of {@link String} to {@link String} for account id to name
+     */
     public Map<String, String> buildIdNameMap(List<Account> accountsToMap) {
         Map<String, String> returnMap = new HashMap<>();
 
