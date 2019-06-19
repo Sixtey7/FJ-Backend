@@ -7,8 +7,12 @@ import javax.ws.rs.core.Feature;
 import javax.ws.rs.core.FeatureContext;
 import javax.ws.rs.ext.Provider;
 
+/**
+ * Class used to configure CORS to allow the frontend to talk to the backend
+ */
 @Provider
 public class CORSProvider implements Feature {
+
 
     @Override
     public boolean configure(FeatureContext context) {
