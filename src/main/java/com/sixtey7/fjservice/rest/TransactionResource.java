@@ -8,6 +8,7 @@ import com.sixtey7.fjservice.model.converter.CSVGenerator;
 import com.sixtey7.fjservice.model.converter.CSVParser;
 import com.sixtey7.fjservice.model.db.AccountDAO;
 import com.sixtey7.fjservice.model.db.TransactionDAO;
+import com.sixtey7.fjservice.model.transport.TxUpdate;
 import com.sixtey7.fjservice.utils.AccountHelper;
 import com.sixtey7.fjservice.utils.TransHelper;
 import org.apache.logging.log4j.LogManager;
@@ -169,6 +170,8 @@ public class TransactionResource {
 
         String newId = dao.addTransaction(transaction);
 
+        acctHelper.updateBalanceForAccount(transaction.getAccountId());
+
         LOGGER.debug("Assigned ID {}", newId);
 
         return Response.status(200).entity(newId).build();
@@ -262,12 +265,20 @@ public class TransactionResource {
 
         boolean result = dao.updateTransaction(transactionId, transaction);
 
+        //TODO: This really needs to be smarter, needs to look at old vs new
+        // and only update if needed (if the state was or is now confirmed
+        // and handle the case where an tx was moved between accounts
+        Account updatedAccount = acctHelper.updateBalanceForAccount(transaction.getAccountId());
+
         if (result) {
-            return Response.status(200).build();
+            TxUpdate returnObject = new TxUpdate();
+            returnObject.getAccounts().add(updatedAccount);
+            returnObject.getTransactions().add(transaction);
+            return Response.status(200).entity(returnObject).build();
         }
         else {
             LOGGER.error("Failed to save the transaction update for transaction id {}", transactionId);
-            return Response.status(200).entity("Failed to save transaction update!").build();
+            return Response.status(500).entity("Failed to save transaction update!").build();
         }
     }
 

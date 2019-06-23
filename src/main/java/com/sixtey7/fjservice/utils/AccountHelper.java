@@ -11,10 +11,7 @@ import org.apache.logging.log4j.Logger;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.time.LocalDate;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Helper class for dealing with {@link Account objects}
@@ -41,27 +38,41 @@ public class AccountHelper {
 
     /**
      * Kicks off the calculation of the balance for the specified account
+     * @param accountUUID a {@link UUID} capturing the id of the account to update
+     * @return boolean indicating if the balance was successfully updated
+     */
+    public Account updateBalanceForAccount(UUID accountUUID) {
+        return updateBalanceForAccount(accountUUID.toString());
+    }
+
+    /**
+     * Kicks off the calculation of the balance for the specified account
      * @param accountId a {@link String} capturing the UUID of the account to update
      * @return boolean indicating if the balance was successfully updated
      */
-    public boolean updateBalanceForAccount(String accountId) {
+    public Account updateBalanceForAccount(String accountId) {
         LOGGER.info("Updating balance for account with id {}", accountId);
         Account accountToUpdate = accountDAO.getAccount(accountId);
 
         if (accountToUpdate == null) {
             LOGGER.error("Failed to find account with id: {}", accountId);
-            return false;
+            return null;
         }
 
         if (!accountToUpdate.getDynamic()) {
 
             accountToUpdate = updateBalanceForAccount(accountToUpdate);
 
-            return accountDAO.updateAccount(accountId, accountToUpdate);
+            if (!accountDAO.updateAccount(accountId, accountToUpdate)) {
+                return null;
+            }
+        }
+        else {
+
+            LOGGER.warn("Update balance for account was called for account {} but the account was not dynamic!", accountId);
         }
 
-        // return true - nothing was updated, but nothing should have been
-        return true;
+        return accountToUpdate;
     }
 
     /**
@@ -91,20 +102,17 @@ public class AccountHelper {
         //first, sort the list of transactions
         Collections.sort(txList);
 
-        LocalDate now = LocalDate.now();
-
         float balance = 0;
         for (Transaction thisTrans : txList) {
-            if (!(thisTrans.getDateAsLocalDT().isAfter(now))) {
+            if (thisTrans.getType().equals(Transaction.TransType.CONFIRMED)) {
                 LOGGER.debug("Balance before {}", balance);
                 LOGGER.debug("Amount {}", thisTrans.getAmount());
                 balance += thisTrans.getAmount();
                 LOGGER.debug("Balance after {}", balance);
             }
-            else {
-                LOGGER.debug("Breaking!");
-                break;
-            }
+            //NOTE: This used to break once it hit one that wasn't CONFIRMED, but its possible to have several
+            // entries on the same day, so we can't rely on the first bad one to be the last entry
+            //TODO: Fix the above
         }
 
         LOGGER.info("Final Balance: {}", balance);
