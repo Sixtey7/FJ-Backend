@@ -21,6 +21,11 @@ public class TxUpdate {
     private List<Account> accounts;
 
     /**
+     * holds whether or not the update was a success;
+     */
+    private boolean success;
+
+    /**
      * Default constructor
      */
     public TxUpdate() {
@@ -42,5 +47,13 @@ public class TxUpdate {
 
     public void setAccounts(List<Account> accounts) {
         this.accounts = accounts;
+    }
+
+    public boolean isSuccess() {
+        return success;
+    }
+
+    public void setSuccess(boolean success) {
+        this.success = success;
     }
 }

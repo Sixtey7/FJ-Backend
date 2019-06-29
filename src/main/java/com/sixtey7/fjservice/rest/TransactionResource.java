@@ -169,12 +169,18 @@ public class TransactionResource {
         transHelper.fixDateForTrans(transaction);
 
         String newId = dao.addTransaction(transaction);
-
-        acctHelper.updateBalanceForAccount(transaction.getAccountId());
-
         LOGGER.debug("Assigned ID {}", newId);
 
-        return Response.status(200).entity(newId).build();
+        transaction.setId(UUID.fromString(newId));
+
+        Account updatedAccount = acctHelper.updateBalanceForAccount(transaction.getAccountId());
+
+        TxUpdate returnObject = new TxUpdate();
+        returnObject.getAccounts().add(updatedAccount);
+        returnObject.getTransactions().add(transaction);
+        returnObject.setSuccess(true);
+        return Response.status(200).entity(returnObject).build();
+
     }
     /**
      * REST Service used to import transactions for an account
@@ -274,6 +280,7 @@ public class TransactionResource {
             TxUpdate returnObject = new TxUpdate();
             returnObject.getAccounts().add(updatedAccount);
             returnObject.getTransactions().add(transaction);
+            returnObject.setSuccess(result);
             return Response.status(200).entity(returnObject).build();
         }
         else {
