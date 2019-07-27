@@ -53,10 +53,12 @@ public class CSVGenerator {
 
         // All Accounts
         csvFile.append("!,Accounts");
+        csvFile.append("\n");
         csvFile.append(buildStringBuilderForAccounts(allAccounts));
 
         // All Txs
         csvFile.append("!,Transactions");
+        csvFile.append("\n");
         csvFile.append(buildStringBuilderForAllTxs(allTxs, acctNameMap));
 
         return csvFile.toString();
@@ -105,7 +107,7 @@ public class CSVGenerator {
     private StringBuilder buildStringBuilderForAllTxs(List<Transaction> allTxs, Map<String, String> acctNameMap) {
         StringBuilder csvFile = new StringBuilder();
         for (Transaction tx : allTxs) {
-            if (acctNameMap.get(tx.getAccountId()) != null) {
+            if (acctNameMap.get(tx.getAccountId().toString()) != null) {
                 csvFile.append(generateCSVLineFromTransaction(tx, acctNameMap.get(tx.getAccountId().toString())));
             }
             else {
