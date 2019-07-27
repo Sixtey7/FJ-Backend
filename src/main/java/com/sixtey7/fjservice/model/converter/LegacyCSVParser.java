@@ -13,12 +13,12 @@ import java.util.UUID;
 /**
  * Class used to parse out transaction data from a CSV String
  */
-public class CSVParser {
+public class LegacyCSVParser {
 
     /**
      * LOGGER for the class
      */
-    private static final Logger LOGGER = LogManager.getLogger(CSVParser.class);
+    private static final Logger LOGGER = LogManager.getLogger(LegacyCSVParser.class);
 
     /**
      * Leads the parsing of the CSV Data

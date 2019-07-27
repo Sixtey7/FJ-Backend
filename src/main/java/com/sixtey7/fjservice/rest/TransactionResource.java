@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sixtey7.fjservice.model.Account;
 import com.sixtey7.fjservice.model.Transaction;
 import com.sixtey7.fjservice.model.converter.CSVGenerator;
-import com.sixtey7.fjservice.model.converter.CSVParser;
+import com.sixtey7.fjservice.model.converter.LegacyCSVParser;
 import com.sixtey7.fjservice.model.db.AccountDAO;
 import com.sixtey7.fjservice.model.db.TransactionDAO;
 import com.sixtey7.fjservice.model.transport.TxUpdate;
@@ -188,17 +188,17 @@ public class TransactionResource {
      * @param transactionData The data to import (comma separated)
      * @return {@link Response} containing the number of transactions imported
      */
-    @Path("/import/{accountId}")
+    @Path("/legacyImport/{accountId}")
     @PUT
     @Consumes(MediaType.TEXT_PLAIN)
     public Response importTransactions(@PathParam("accountId") final String accountId, final String transactionData) {
-        LOGGER.info("Importing transaction data for account id {}", accountId);
+        LOGGER.info("Importing legacy transaction data for account id {}", accountId);
         //parse the account id
         UUID accountUUID = UUID.fromString(accountId);
 
         LOGGER.debug("Importing transactions for account: " + accountId);
 
-        List<Transaction> transToImport = new CSVParser().parseCSVFile(transactionData, accountUUID);
+        List<Transaction> transToImport = new LegacyCSVParser().parseCSVFile(transactionData, accountUUID);
 
         LOGGER.debug("Found {} transactions", transToImport.size());
 
@@ -212,18 +212,18 @@ public class TransactionResource {
      * @param transactionData The data to import (comma separated)
      * @return {@link Response} containing the UUID of the created account
      */
-    @Path("/import")
+    @Path("/legacyImport")
     @PUT
     @Consumes(MediaType.TEXT_PLAIN)
-    public Response importTransactionsForNewAccount(final String transactionData) {
-        LOGGER.info("Importing transactions data for new account");
+    public Response importLegacyTransactionsForNewAccount(final String transactionData) {
+        LOGGER.info("Importing legacy transactions data for new account");
 
         Account newAccount = new Account("Imported");
         newAccount.setDynamic(false);
         newAccount.setName("Imported");
         newAccount.setNotes("Imported from a CSV Party");
 
-        List<Transaction> transToImport = new CSVParser().parseCSVFile(transactionData, newAccount.getId());
+        List<Transaction> transToImport = new LegacyCSVParser().parseCSVFile(transactionData, newAccount.getId());
 
         LOGGER.debug("Found {} transactions", transToImport.size());
 
