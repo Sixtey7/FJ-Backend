@@ -43,6 +43,38 @@ public class CSVGenerator {
     private TransactionDAO txDao;
 
 
+    public String generateStringForAllData() {
+        List<Account> allAccounts = acctDao.getAllAccounts();
+        List<Transaction> allTxs = txDao.getAllTransactions();
+
+        Map<String, String> acctNameMap = acctHelper.buildIdNameMap(allAccounts);
+
+        StringBuilder csvFile = new StringBuilder();
+
+        // All Accounts
+        csvFile.append("!,Accounts");
+        csvFile.append(buildStringBuilderForAccounts(allAccounts));
+
+        // All Txs
+        csvFile.append("!,Transactions");
+        csvFile.append(buildStringBuilderForAllTxs(allTxs, acctNameMap));
+
+        return csvFile.toString();
+
+    }
+    /**
+     *
+     * Returns a string that captures all of the account data in CSV Format
+     * @return {@link String} holding all {@link Account} data
+     */
+    public String generateCSVForAllAccounts() {
+        LOGGER.info("Generating csv for all accounts");
+        List<Account> allAccounts = acctDao.getAllAccounts();
+
+
+        return buildStringBuilderForAccounts(allAccounts).toString();
+    }
+
     /**
      * Returns a string that captures all of the data in CSV Format
      * @return {@link String} holding all {@link Transaction} data
@@ -56,9 +88,24 @@ public class CSVGenerator {
         Map<String, String> acctNameMap = acctHelper.buildIdNameMap(allAccounts);
 
         LOGGER.debug("found {} transactions", allTxs.size());
+
+        return buildStringBuilderForAllTxs(allTxs, acctNameMap).toString();
+
+    }
+
+    private StringBuilder buildStringBuilderForAccounts(List<Account> allAccounts) {
+        StringBuilder csvFile = new StringBuilder();
+        for (Account acct : allAccounts) {
+            csvFile.append(generateCSVLineFromAccount(acct));
+        }
+
+        return csvFile;
+    }
+
+    private StringBuilder buildStringBuilderForAllTxs(List<Transaction> allTxs, Map<String, String> acctNameMap) {
         StringBuilder csvFile = new StringBuilder();
         for (Transaction tx : allTxs) {
-            if (tx.getAmount() != null) {
+            if (acctNameMap.get(tx.getAccountId()) != null) {
                 csvFile.append(generateCSVLineFromTransaction(tx, acctNameMap.get(tx.getAccountId().toString())));
             }
             else {
@@ -66,7 +113,8 @@ public class CSVGenerator {
             }
         }
 
-        return csvFile.toString();
+        return csvFile;
+
     }
 
     /**
@@ -108,5 +156,46 @@ public class CSVGenerator {
         sb.append("\n");
 
         return sb;
+    }
+
+    /**
+     * Builds a {@link StringBuilder} for a single {@link Account}
+     * @param acct {@link Account} to build the line for
+     * @return {@link StringBuilder} containing the data
+     */
+    private StringBuilder generateCSVLineFromAccount(Account acct) {
+        LOGGER.debug("Building a line for {}", acct.getId());
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(acct.getName());
+        sb.append(",");
+
+        if (acct.getAmount() < 0) {
+            sb.append((acct.getAmount() * -1));
+            sb.append(",");
+        }
+        else {
+            sb.append(",");
+            sb.append(acct.getAmount());
+        }
+        sb.append(",");
+
+        sb.append(acct.getNotes());
+        sb.append(",");
+
+        if (acct.getDynamic()) {
+            sb.append("Dynamic");
+        }
+        else {
+            sb.append("Calculated");
+        }
+        sb.append(",");
+
+        sb.append("\n");
+
+
+        return sb;
+
+
     }
 }
