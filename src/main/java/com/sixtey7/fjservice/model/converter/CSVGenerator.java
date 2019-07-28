@@ -52,12 +52,12 @@ public class CSVGenerator {
         StringBuilder csvFile = new StringBuilder();
 
         // All Accounts
-        csvFile.append("!,Accounts");
+        csvFile.append("~!~,Accounts");
         csvFile.append("\n");
         csvFile.append(buildStringBuilderForAccounts(allAccounts));
 
         // All Txs
-        csvFile.append("!,Transactions");
+        csvFile.append("~!~,Transactions");
         csvFile.append("\n");
         csvFile.append(buildStringBuilderForAllTxs(allTxs, acctNameMap));
 
