@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * RESTful Service used to creat and obtain data about transactions
+ * RESTful Service used to create and obtain data about transactions
  */
 @Path("/transactions")
 @RequestScoped
