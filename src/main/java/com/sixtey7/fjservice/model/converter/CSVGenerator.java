@@ -31,7 +31,7 @@ public class CSVGenerator {
     private AccountDAO acctDao;
 
     /**
-     * Used to massage transaction data
+     * Used to massage account data
      */
     @Inject
     private AccountHelper acctHelper;
