@@ -148,10 +148,8 @@ public class CSVGenerator {
         sb.append(tx.getDateAsLocalDT());
         sb.append(",");
 
-        //we've been using (est) in the notes to indicate an estimated value
-        if (tx.getType().equals(Transaction.TransType.ESTIMATE)) {
-            sb.append("(est)");
-        }
+        sb.append(tx.getType().toString());
+        sb.append(",");
 
         sb.append(tx.getNotes());
 
