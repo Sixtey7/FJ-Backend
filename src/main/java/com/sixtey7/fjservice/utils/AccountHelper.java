@@ -135,6 +135,15 @@ public class AccountHelper {
         }
 
         return returnMap;
+    }
 
+    public Map<String, UUID> buildNameToUUIDMap(List<Account> accountsToMap) {
+        Map<String, UUID> returnMap = new HashMap<>();
+
+        for (Account acct : accountsToMap) {
+            returnMap.put(acct.getName(), acct.getId());
+        }
+
+        return returnMap;
     }
 }

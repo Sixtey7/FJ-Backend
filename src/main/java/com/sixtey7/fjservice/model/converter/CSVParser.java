@@ -4,6 +4,7 @@ import com.sixtey7.fjservice.model.Account;
 import com.sixtey7.fjservice.model.Transaction;
 import com.sixtey7.fjservice.model.db.AccountDAO;
 import com.sixtey7.fjservice.model.db.TransactionDAO;
+import com.sixtey7.fjservice.model.transport.TxUpdate;
 import com.sixtey7.fjservice.utils.AccountHelper;
 import com.sixtey7.fjservice.utils.TransHelper;
 import org.apache.logging.log4j.LogManager;
@@ -12,7 +13,7 @@ import org.apache.logging.log4j.Logger;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.time.LocalDate;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Class used to parse a generated CSV File
@@ -48,6 +49,94 @@ public class CSVParser {
      */
     @Inject
     private TransHelper txHelper;
+
+    /**
+     * Parses all of the {@link Transaction} and {@link Account} from the provided {@String} from CSV File
+     * @param textFromCSV Input from the CSV File
+     * @return {@link TxUpdate} object containing all of the parsed items
+     */
+    public TxUpdate parseAllFromCSV(String textFromCSV) {
+        TxUpdate returnValue = new TxUpdate();
+
+        String sections[] = textFromCSV.split("~!~");
+
+        if (sections.length != 2) {
+            throw new IllegalArgumentException("Incorrect number of sections provided, expected 2 got " + sections.length);
+        }
+
+        /* Accounts */
+        //need to strip off the first line
+        int firstSlashNPos = sections[0].indexOf("\\n");
+        String accountSection = sections[0].substring(firstSlashNPos + 1);
+        LOGGER.debug("Captured account section\n{}", accountSection);
+
+        returnValue.getAccounts().addAll(parseAccounts(accountSection));
+
+        //build the accounts map for transactions
+        Map<String, UUID> accountNameMap = acctHelper.buildNameToUUIDMap(returnValue.getAccounts());
+
+        /* Transactions */
+        //need to strip off the first line
+        int firstTxSlashNPos = sections[1].indexOf("\\n");
+        String transSection = sections[1].substring(firstTxSlashNPos + 1);
+        LOGGER.debug("Captured Transaction section\n{}", transSection);
+
+        returnValue.getTransactions().addAll(parseTransactions(transSection, accountNameMap));
+
+        return returnValue;
+    }
+
+    /**
+     * Parses the Transactions from the provided CSV into a new account
+     *
+     * Note - This assumes all Txs belong to an account named with the empty string ("")
+     * @param textFromCSV (@link String} Containing the transactions to input
+     * @return {@link List} of {@link Transaction} parsed from the CSV
+     */
+    public List<Transaction> parseTxForNewAccount(String textFromCSV) {
+        Account newAccount = new Account("");
+        Map<String, UUID> accountNameMap = new HashMap<>();
+        accountNameMap.put(newAccount.getName(), newAccount.getId());
+
+        return parseTransactions(textFromCSV, accountNameMap);
+    }
+
+    /**
+     * Parses all of the accounts from the provided CSV Text
+     * @param textFromCSV {@link String} containing rows of CSV data
+     * @return {@link List} of {@link Account} parsed from the provided data
+     */
+    public List<Account> parseAccounts(String textFromCSV) {
+        List<Account> returnList = new ArrayList<>();
+
+        String[] allLines = textFromCSV.split("\\n");
+        LOGGER.info("Found {} Accounts!", allLines.length);
+
+        for (int lineCounter = 1; lineCounter < allLines.length; lineCounter++) {
+            returnList.add(generateAccountFromString(allLines[lineCounter]));
+        }
+
+        return returnList;
+    }
+
+    /**
+     * Parses all of the transactions from the provided CSV Text
+     * @param textFromCSV {@link String} from the CSV File
+     * @param accountNameMap {@link Map} of account name {@link String} to account UUID {@link UUID}
+     * @return
+     */
+    public List<Transaction> parseTransactions(String textFromCSV, Map<String, UUID> accountNameMap) {
+        List<Transaction> returnList = new ArrayList<>();
+
+        String[] allLines = textFromCSV.split("\\n");
+        LOGGER.info("Found {} Transactions!", allLines.length);
+
+        for (int lineCounter = 1; lineCounter < allLines.length; lineCounter++) {
+            returnList.add(generateTxFromString(allLines[lineCounter], accountNameMap));
+        }
+
+        return returnList;
+    }
 
     /**
      * Generates a single account from a line from the CSV File
@@ -90,13 +179,14 @@ public class CSVParser {
         return newAccount;
 
     }
+
     /**
      * Generates a single transaction from a line from the CSV File
      * @param csvLine the line from the file
-     * @param accountUUID {@link UUID} of the account
+     * @param accountNameMap {@link Map} of account name {@link String} to account UUID {@link UUID}
      * @return {@link Transaction} created from the String
      */
-    private Transaction generateTxFromString(String csvLine, UUID accountUUID) {
+    private Transaction generateTxFromString(String csvLine, Map<String, UUID> accountNameMap) {
         /* Expected order
         0 - Name
         1 - Debit
@@ -116,6 +206,9 @@ public class CSVParser {
         String name = lineData[0];
 
         float amount = determineAmount(lineData[1], lineData[2]);
+
+        String accountName = lineData[3];
+        UUID accountUUID = accountNameMap.get(accountName);
 
         LocalDate transDate = LocalDate.now();
 
