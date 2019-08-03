@@ -49,6 +49,11 @@ public class CSVParser {
     @Inject
     private TransHelper txHelper;
 
+    /**
+     * Generates a single account from a line from the CSV File
+     * @param csvLine {@link String} the line from the file
+     * @return {@link Account} generated from the parsed line
+     */
     private Account generateAccountFromString(String csvLine) {
         /* Expected Order
         0 - Name
