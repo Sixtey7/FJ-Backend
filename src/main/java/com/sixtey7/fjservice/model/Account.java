@@ -42,6 +42,14 @@ public class Account {
         this.name = name;
     }
 
+    public Account(String name, float amount, String notes, boolean dynamic) {
+        this.id = UUID.randomUUID();
+        this.name = name;
+        this.amount = amount;
+        this.notes = notes;
+        this.dynamic = dynamic;
+    }
+
     public UUID getId() {
         return id;
     }
@@ -80,5 +88,40 @@ public class Account {
 
     public void setDynamic(Boolean dynamic) {
         this.dynamic = dynamic;
+    }
+
+    /**
+     * Override the default toString to provide a cleaner log message
+     * @return {@link String} for the {@link Account}
+     */
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+
+        //Account Id
+        sb.append("Account Id: ");
+        sb.append(this.id.toString());
+        sb.append("\n");
+
+        //Name
+        sb.append("Name: ");
+        sb.append(this.name);
+        sb.append("\n");
+
+        //Amount
+        sb.append("Amount: ");
+        sb.append(this.amount);
+        sb.append("\n");
+
+        //Dynamic
+        sb.append("Dynamic: ");
+        sb.append(this.dynamic);
+        sb.append("\n");
+
+        //Notes
+        sb.append("Notes: ");
+        sb.append(this.notes);
+
+        return sb.toString();
     }
 }

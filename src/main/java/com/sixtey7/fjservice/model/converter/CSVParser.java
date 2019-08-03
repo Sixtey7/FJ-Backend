@@ -1,5 +1,6 @@
 package com.sixtey7.fjservice.model.converter;
 
+import com.sixtey7.fjservice.model.Account;
 import com.sixtey7.fjservice.model.Transaction;
 import com.sixtey7.fjservice.model.db.AccountDAO;
 import com.sixtey7.fjservice.model.db.TransactionDAO;
@@ -48,6 +49,42 @@ public class CSVParser {
     @Inject
     private TransHelper txHelper;
 
+    private Account generateAccountFromString(String csvLine) {
+        /* Expected Order
+        0 - Name
+        1 - Debit
+        2 - Credit
+        3 - Notes
+        4 - Type (Dynamic / Calculated)
+         */
+
+        String[] lineData = csvLine.split(",", 5);
+
+        if (lineData.length != 7) {
+            throw new IllegalArgumentException("Incorrect number of entries provided, expected 5 got " + lineData.length);
+        }
+
+        String name = lineData[0];
+
+        float amount = determineAmount(lineData[1], lineData[2]);
+
+        String notes = lineData[3];
+
+        boolean dynamic = true;
+        //TODO: This string should be a constant somewhere
+        if (lineData[4].equals("Calculated")) {
+            dynamic = false;
+        }
+
+        Account newAccount = new Account(name, amount, notes, dynamic);
+
+        LOGGER.debug("    ~~~~~");
+        LOGGER.debug(newAccount.toString());
+        LOGGER.debug("    ~~~~~");
+
+        return newAccount;
+
+    }
     /**
      * Generates a single transaction from a line from the CSV File
      * @param csvLine the line from the file
@@ -73,16 +110,7 @@ public class CSVParser {
 
         String name = lineData[0];
 
-        float amount = 0;
-        if (!lineData[1].equals("")) {
-            amount = -1 * getAmountFromString(lineData[1]);
-        }
-        else if (!lineData[2].equals("")) {
-            amount = getAmountFromString(lineData[2]);
-        }
-        else {
-            LOGGER.warn("Failed to parse an amont 1: {} 2: {}", lineData[1], lineData[2]);
-        }
+        float amount = determineAmount(lineData[1], lineData[2]);
 
         LocalDate transDate = LocalDate.now();
 
@@ -107,6 +135,33 @@ public class CSVParser {
         return newTrans;
     }
 
+    /**
+     * Parses an amount value out of the provided debit and credit strings
+     * @param debit {@link String} containing the debit value
+     * @param credit {@link String} containing the credit value
+     * @return float containing the parsed value (or 0 if no value could be parsed)
+     */
+    private float determineAmount(String debit, String credit) {
+        float amount = 0;
+
+        if (!debit.equals("")) {
+            amount = -1 * getAmountFromString(debit);
+        }
+        else if (!credit.equals("")) {
+            amount = getAmountFromString(credit);
+        }
+        else {
+            LOGGER.warn("Failed to parse an amount Debit: {} Credit {}", debit, credit);
+        }
+
+        return amount;
+    }
+
+    /**
+     * Parses a float out of the monetary string (handles the $)
+     * @param amountString a {@link String} containing the value
+     * @return float parsed from the string
+     */
     private float getAmountFromString(String amountString) {
         String value = amountString;
         if (value.charAt(0) == '$') {
