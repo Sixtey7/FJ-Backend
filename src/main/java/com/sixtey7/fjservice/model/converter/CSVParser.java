@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
+import java.time.LocalDate;
 import java.util.UUID;
 
 /**
@@ -54,7 +55,65 @@ public class CSVParser {
      * @return {@link Transaction} created from the String
      */
     private Transaction generateTxFromString(String csvLine, UUID accountUUID) {
-        return new Transaction();
+        /* Expected order
+        0 - Name
+        1 - Debit
+        2 - Credit
+        3 - Account Name
+        4 - Date
+        5 - Type
+        6 - Notes
+         */
+
+        String[] lineData = csvLine.split(",", 7);
+
+        if (lineData.length != 7) {
+            throw new IllegalArgumentException("Incorrect number of lines provided, expected 7 got " + lineData.length);
+        }
+
+        String name = lineData[0];
+
+        float amount = 0;
+        if (!lineData[1].equals("")) {
+            amount = -1 * getAmountFromString(lineData[1]);
+        }
+        else if (!lineData[2].equals("")) {
+            amount = getAmountFromString(lineData[2]);
+        }
+        else {
+            LOGGER.warn("Failed to parse an amont 1: {} 2: {}", lineData[1], lineData[2]);
+        }
+
+        LocalDate transDate = LocalDate.now();
+
+        if (!lineData[4].equals("")) {
+            LOGGER.debug("Got the time: {}", lineData[4]);
+            transDate = LocalDate.parse(lineData[4]);
+        }
+
+        Transaction.TransType type = Transaction.TransType.FUTURE;
+        if (!lineData[5].equals("")) {
+            type = Transaction.TransType.valueOf(lineData[5]);
+        }
+
+        String notes = lineData[6];
+
+        Transaction newTrans = new Transaction(name, transDate, amount, accountUUID, notes, type);
+
+        LOGGER.debug("    ~~~~~");
+        LOGGER.debug(newTrans.toString());
+        LOGGER.debug("    ~~~~~");
+
+        return newTrans;
+    }
+
+    private float getAmountFromString(String amountString) {
+        String value = amountString;
+        if (value.charAt(0) == '$') {
+            value = value.substring(1);
+        }
+
+        return Float.parseFloat(value);
     }
 
 }
