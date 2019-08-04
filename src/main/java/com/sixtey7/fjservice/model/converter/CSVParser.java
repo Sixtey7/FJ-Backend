@@ -59,15 +59,31 @@ public class CSVParser {
         TxUpdate returnValue = new TxUpdate();
 
         String sections[] = textFromCSV.split("~!~");
+        String accounts;
+        String transactions;
 
-        if (sections.length != 2) {
+        if (sections.length == 2) {
+            accounts = sections[0];
+            transactions = sections[1];
+        }
+        else if (sections.length == 3) {
+            // For some reason, the split tends to return 3, with the first being empty, handle this case
+            if (sections[0].equals("")) {
+                accounts = sections[1];
+                transactions = sections[2];
+            }
+            else {
+                throw new IllegalArgumentException("Incorrect number of sections provided, expected 2 got " + sections.length);
+            }
+        }
+        else {
             throw new IllegalArgumentException("Incorrect number of sections provided, expected 2 got " + sections.length);
         }
 
         /* Accounts */
         //need to strip off the first line
-        int firstSlashNPos = sections[0].indexOf("\\n");
-        String accountSection = sections[0].substring(firstSlashNPos + 1);
+        int firstSlashNPos = accounts.indexOf("\\n");
+        String accountSection = accounts.substring(firstSlashNPos + 1);
         LOGGER.debug("Captured account section\n{}", accountSection);
 
         returnValue.getAccounts().addAll(parseAccounts(accountSection));
@@ -77,8 +93,8 @@ public class CSVParser {
 
         /* Transactions */
         //need to strip off the first line
-        int firstTxSlashNPos = sections[1].indexOf("\\n");
-        String transSection = sections[1].substring(firstTxSlashNPos + 1);
+        int firstTxSlashNPos = transactions.indexOf("\\n");
+        String transSection = transactions.substring(firstTxSlashNPos + 1);
         LOGGER.debug("Captured Transaction section\n{}", transSection);
 
         returnValue.getTransactions().addAll(parseTransactions(transSection, accountNameMap));
@@ -154,7 +170,7 @@ public class CSVParser {
 
         String[] lineData = csvLine.split(",", 5);
 
-        if (lineData.length != 7) {
+        if (lineData.length != 5) {
             throw new IllegalArgumentException("Incorrect number of entries provided, expected 5 got " + lineData.length);
         }
 
