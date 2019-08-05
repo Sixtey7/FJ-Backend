@@ -51,7 +51,36 @@ public class CSVParser {
     private TransHelper txHelper;
 
     /**
-     * Parses all of the {@link Transaction} and {@link Account} from the provided {@String} from CSV File
+     * Clears the database and then parses and stores in the database all of
+     * the {@link Transaction} and {@link Account} from the provided
+     * {@link String} from a CSV File
+     * @param textFromCSV {@link String} containing the input from a CSV File
+     * @return {@link TxUpdate} containing the items that have been stored in the database
+     */
+    public TxUpdate parseAndClearAndStoreAllFromCSV(String textFromCSV) {
+        //TODO Clear the database
+        TxUpdate updateFromCSV = parseAndStoreAllFromCSV(textFromCSV);
+
+        return updateFromCSV;
+    }
+
+
+    /**
+     * Parses and stores in the database all of the {@link Transaction and
+     * {@link Account} from the provided {@link String} from CSV File
+     * @param textFromCSV Input from a CSV File
+     * @return {@link TxUpdate} of the items that have been stored in the database
+     */
+    public TxUpdate parseAndStoreAllFromCSV(String textFromCSV) {
+        TxUpdate updatesFromCSV = parseAllFromCSV(textFromCSV);
+
+        //TODO Store the accounts and transactions
+        return updatesFromCSV;
+    }
+
+    /**
+     * Parses all of the {@link Transaction} and {@link Account}
+     * from the provided {@link String} from CSV File
      * @param textFromCSV Input from the CSV File
      * @return {@link TxUpdate} object containing all of the parsed items
      */

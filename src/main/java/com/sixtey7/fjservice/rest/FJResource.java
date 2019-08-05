@@ -75,4 +75,21 @@ public class FJResource {
         }
     }
 
+    @Path("/cleanAndImport")
+    @PUT
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.TEXT_PLAIN)
+    public Response cleanAndImportFromCSV(String csvData) {
+        LOGGER.info("Cleaning the database then importing accounts and transactions");
+
+        try {
+            TxUpdate returnData = csvParser.parseAndClearAndStoreAllFromCSV(csvData);
+
+            return Response.status(200).entity(returnData).build();
+        }
+        catch (IllegalArgumentException iae) {
+            return Response.status(400).entity(iae.getMessage()).build();
+        }
+    }
+
 }
