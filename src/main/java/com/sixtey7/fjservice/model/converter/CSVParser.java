@@ -58,7 +58,11 @@ public class CSVParser {
      * @return {@link TxUpdate} containing the items that have been stored in the database
      */
     public TxUpdate parseAndClearAndStoreAllFromCSV(String textFromCSV) {
-        //TODO Clear the database
+        //Delete everything from the database
+        txDao.deleteAllTransactions();
+        acctDao.deleteAllAccounts();
+
+        //Store everything in the database
         TxUpdate updateFromCSV = parseAndStoreAllFromCSV(textFromCSV);
 
         return updateFromCSV;
@@ -74,7 +78,9 @@ public class CSVParser {
     public TxUpdate parseAndStoreAllFromCSV(String textFromCSV) {
         TxUpdate updatesFromCSV = parseAllFromCSV(textFromCSV);
 
-        //TODO Store the accounts and transactions
+        //store everything in the database
+
+        txDao.addAllTransactions(updatesFromCSV.getTransactions());
         return updatesFromCSV;
     }
 

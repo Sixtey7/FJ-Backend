@@ -95,12 +95,17 @@ public class TransactionDAO {
     @Transactional
     public String addTransaction(Transaction transactionToAdd) {
         LOGGER.debug("Adding a new transaction");
-        UUID id = UUID.randomUUID();
+        if (transactionToAdd.getId() == null) {
+            UUID id = UUID.randomUUID();
 
-        LOGGER.debug("Generated the id {}" , id);
-        transactionToAdd.setId(id);
+            LOGGER.debug("Generated the id {}" , id);
+            transactionToAdd.setId(id);
+        }
+        else {
+            LOGGER.debug("Transaction already had an ID ({}), no need to assign one", transactionToAdd.getId());
+        }
 
-        TransactionRecord trToPersist = new TransactionRecord(id, transactionToAdd);
+        TransactionRecord trToPersist = new TransactionRecord(transactionToAdd.getId(), transactionToAdd);
 
         try {
             em.persist(trToPersist);
@@ -110,7 +115,7 @@ public class TransactionDAO {
             return null;
         }
 
-        return id.toString();
+        return transactionToAdd.getId().toString();
     }
 
     /**

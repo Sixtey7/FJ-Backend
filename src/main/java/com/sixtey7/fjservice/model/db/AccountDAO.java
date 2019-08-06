@@ -75,11 +75,16 @@ public class AccountDAO {
     public String addAccount(Account accountToAdd) {
         LOGGER.debug("Adding a new account!");
 
-        UUID newId = UUID.randomUUID();
-        LOGGER.debug("Generated the id {}", newId);
-        accountToAdd.setId(newId);
+        if (accountToAdd.getId() == null) {
+            UUID newId = UUID.randomUUID();
+            LOGGER.debug("Generated the id {}", newId);
+            accountToAdd.setId(newId);
+        }
+        else {
+            LOGGER.debug("Account already had an ID ({}), no need to reassign", accountToAdd.getId());
+        }
 
-        AccountRecord arToPersist = new AccountRecord(newId, accountToAdd);
+        AccountRecord arToPersist = new AccountRecord(accountToAdd.getId(), accountToAdd);
 
         try {
             em.persist(arToPersist);
@@ -89,7 +94,26 @@ public class AccountDAO {
             return null;
         }
 
-        return newId.toString();
+        return accountToAdd.getId().toString();
+    }
+
+    /**
+     * Adds a list of accounts to the database
+     * @param acctList {@link List} of {@link Account} to be added
+     * @return {@link List} of Strings containing the UUIDs assigned to the accounts
+     */
+    public List<String> addAllAccounts(List<Account> acctList) {
+        LOGGER.debug("Saving {} accounts", acctList.size());
+        List<String> returnList = new ArrayList<>();
+
+        for (Account thisAcct : acctList) {
+            String assignedId = this.addAccount(thisAcct);
+            LOGGER.trace("adding {} to the array to return", assignedId);
+            returnList.add(assignedId);
+        }
+
+        LOGGER.debug("Added {} accounts", returnList.size());
+        return returnList;
     }
 
     /**
