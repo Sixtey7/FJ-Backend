@@ -79,8 +79,9 @@ public class CSVParser {
         TxUpdate updatesFromCSV = parseAllFromCSV(textFromCSV);
 
         //store everything in the database
-
+        acctDao.addAllAccounts(updatesFromCSV.getAccounts());
         txDao.addAllTransactions(updatesFromCSV.getTransactions());
+
         return updatesFromCSV;
     }
 
