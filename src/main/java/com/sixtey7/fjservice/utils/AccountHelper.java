@@ -137,6 +137,11 @@ public class AccountHelper {
         return returnMap;
     }
 
+    /**
+     * Builds a map of account names in String form to Account id
+     * @param accountsToMap {@link List} of {@link Account} objects to build the map from
+     * @return {@link Map} of {@link String} to {@link UUID} for account name to id
+     */
     public Map<String, UUID> buildNameToUUIDMap(List<Account> accountsToMap) {
         Map<String, UUID> returnMap = new HashMap<>();
 
