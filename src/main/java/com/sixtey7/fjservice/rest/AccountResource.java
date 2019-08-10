@@ -79,7 +79,7 @@ public class AccountResource {
 
     /**
      * REST Service to obtain information about a single account
-     * @param accountId Strike containing the UUID of the account to get data for
+     * @param accountId {@link String} containing the UUID of the account to get data for
      * @return {@link Response} object containing the requested {@link Account} object
      */
     @Path("/{accountId}")
@@ -100,6 +100,11 @@ public class AccountResource {
         }
     }
 
+    /**
+     * Recalculates the balance for the indicated account
+     * @param accountId {@link String} containing the ID of the account to update
+     * @return Value indicating if the update was successful
+     */
     @Path("/updateBalanceForAccount/{accountId}")
     @GET
     public Response updateBalanceForAccount(@PathParam("accountId") final String accountId) {
@@ -137,7 +142,7 @@ public class AccountResource {
 
     /**
      * REST Service used to update the indicated account
-     * @param accountId String containing the UUID of the account to update
+     * @param accountId {@link String} containing the UUID of the account to update
      * @param account {@link Account} the account object to store
      * @return {@link Response} object indicating if the update was successful
      */
@@ -165,7 +170,7 @@ public class AccountResource {
 
     /**
      * REST Service used to delete the indicated account
-     * @param accountId String containing the UUID of the account to delete
+     * @param accountId {@link String} containing the UUID of the account to delete
      * @return {@link Response} object containing the number of records deleted
      */
     @Path("/{accountId}")

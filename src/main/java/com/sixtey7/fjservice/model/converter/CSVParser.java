@@ -70,7 +70,7 @@ public class CSVParser {
 
 
     /**
-     * Parses and stores in the database all of the {@link Transaction and
+     * Parses and stores in the database all of the {@link Transaction} and
      * {@link Account} from the provided {@link String} from CSV File
      * @param textFromCSV Input from a CSV File
      * @return {@link TxUpdate} of the items that have been stored in the database
@@ -142,7 +142,7 @@ public class CSVParser {
      * Parses the Transactions from the provided CSV into a new account
      *
      * Note - This assumes all Txs belong to an account named with the empty string ("")
-     * @param textFromCSV (@link String} Containing the transactions to input
+     * @param textFromCSV {@link String} Containing the transactions to input
      * @return {@link List} of {@link Transaction} parsed from the CSV
      */
     public List<Transaction> parseTxForNewAccount(String textFromCSV) {

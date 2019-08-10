@@ -81,7 +81,7 @@ public class TransactionResource {
 
     /**
      * REST Service used to obtain all of the transactions in the database
-     * @return {@link Response} that contains all of the transaactions
+     * @return {@link Response} that contains all of the transactions
      */
     @Path("")
     @GET
@@ -104,7 +104,7 @@ public class TransactionResource {
 
     /**
      * REST Service used to obtain the details of a single transaction
-     * @param transId String containing the UUID of the transaction to get
+     * @param transId {@link String} containing the UUID of the transaction to get
      * @return {@link Response} containing the details of the requested transaction
      */
     @Path("/{transId}")
@@ -127,7 +127,7 @@ public class TransactionResource {
 
     /**
      * REST Service used to get all of the transactions tied to the specified account
-     * @param accountId String containing the UUID of the account to get transactions for
+     * @param accountId {@link String} containing the UUID of the account to get transactions for
      * @return {@link Response} containing the list of matching transactions
      */
     @Path("/forAccount/{accountId}")
@@ -291,7 +291,7 @@ public class TransactionResource {
 
     /**
      * REST Service used to delete a transaction from the database
-     * @param transactionId String containing the UUID of the transaction to be deleted
+     * @param transactionId {@link String} containing the UUID of the transaction to be deleted
      * @return {@link Response} containing the number of records deleted
      */
     @Path("/{transactionId}")
