@@ -109,10 +109,12 @@ public class CSVParser {
                 transactions = sections[2];
             }
             else {
+                LOGGER.error("Incorrect number of sections provided, expected 2 got {}", sections.length);
                 throw new IllegalArgumentException("Incorrect number of sections provided, expected 2 got " + sections.length);
             }
         }
         else {
+            LOGGER.error("Incorrect number of sections provided, expected 2 got {}", sections.length);
             throw new IllegalArgumentException("Incorrect number of sections provided, expected 2 got " + sections.length);
         }
 
