@@ -137,6 +137,8 @@ public class CSVParser {
 
         returnValue.getTransactions().addAll(parseTransactions(transSection, accountNameMap));
 
+        returnValue.setSuccess(true);
+        
         return returnValue;
     }
 
