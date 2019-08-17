@@ -86,6 +86,35 @@ public class CSVParser {
     }
 
     /**
+     * Clears the {@link Transaction} database and then parses and stores in the data all of
+     * transactions in the provided CSV
+     * @param textFromCSV Input from the CSV File
+     * @param acctMap {@link Map} of {@link Account} name ({@link String} to Account {@link UUID}
+     * @return {@link List} of parsed {@link Transaction}
+     */
+    public List<Transaction> parseAndClearAndStoreTxFromCSV(String textFromCSV, Map<String, UUID> acctMap) {
+        txDao.deleteAllTransactions();
+
+        List<Transaction> updateFromCSV = parseAndStoreTxFromCSV(textFromCSV, acctMap);
+
+        return updateFromCSV;
+    }
+
+    /**
+     * Parses and stores in the database all of the {@link Transaction} from the CSV File
+     * @param textFromCSV Input from the CSV File
+     * @param acctMap {@link Map} of {@link Account} name ({@link String} to Account {@link UUID}
+     * @return {@link List} of parsed {@link Transaction}
+     */
+    public List<Transaction> parseAndStoreTxFromCSV(String textFromCSV, Map<String, UUID> acctMap) {
+        List<Transaction> updatesFromCSV = parseTransactions(textFromCSV, acctMap);
+
+        txDao.addAllTransactions(updatesFromCSV);
+
+        return updatesFromCSV;
+    }
+
+    /**
      * Parses all of the {@link Transaction} and {@link Account}
      * from the provided {@link String} from CSV File
      * @param textFromCSV Input from the CSV File

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sixtey7.fjservice.model.Account;
 import com.sixtey7.fjservice.model.Transaction;
 import com.sixtey7.fjservice.model.converter.CSVGenerator;
+import com.sixtey7.fjservice.model.converter.CSVParser;
 import com.sixtey7.fjservice.model.converter.LegacyCSVParser;
 import com.sixtey7.fjservice.model.db.AccountDAO;
 import com.sixtey7.fjservice.model.db.TransactionDAO;
@@ -22,6 +23,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -63,6 +65,12 @@ public class TransactionResource {
      */
     @Inject
     private CSVGenerator csvGenerator;
+
+    /**
+     * Helper class used to import csv data
+     */
+    @Inject
+    private CSVParser csvParser;
 
     /**
      * REST service used to verify the Transaction Service is up and running
@@ -245,6 +253,26 @@ public class TransactionResource {
         String returnData = csvGenerator.generateCSVForAllTxs();
 
         return Response.status(200).entity(returnData).build();
+    }
+
+    @Path("/import")
+    @PUT
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.TEXT_PLAIN)
+    public Response importFromCSV(String csvData) {
+        LOGGER.info("importing accounts and transactions");
+
+        List<Account> allAccounts = acctDao.getAllAccounts();
+        Map<String, UUID> acctMap = acctHelper.buildNameToUUIDMap(allAccounts);
+
+        try {
+            List<Transaction> returnData = csvParser.parseAndClearAndStoreTxFromCSV(csvData, acctMap);
+
+            return Response.status(200).entity(returnData).build();
+        }
+        catch (IllegalArgumentException iae) {
+            return Response.status(400).entity(iae.getMessage()).build();
+        }
     }
 
     /**
