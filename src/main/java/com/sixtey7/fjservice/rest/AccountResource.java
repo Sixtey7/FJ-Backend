@@ -3,6 +3,8 @@ package com.sixtey7.fjservice.rest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sixtey7.fjservice.model.Account;
+import com.sixtey7.fjservice.model.converter.CSVGenerator;
+import com.sixtey7.fjservice.model.converter.CSVParser;
 import com.sixtey7.fjservice.model.db.AccountDAO;
 import com.sixtey7.fjservice.utils.AccountHelper;
 import org.apache.logging.log4j.LogManager;
@@ -38,6 +40,18 @@ public class AccountResource {
      */
     @Inject
     private AccountHelper acctHelper;
+
+    /**
+     * Helper class used to generate csv data
+     */
+    @Inject
+    private CSVGenerator csvGenerator;
+
+    /**
+     * Helper class used to import csv data
+     */
+    @Inject
+    private CSVParser csvParser;
 
     /**
      * Temporary interface used to verify resource is deployed correctly
@@ -115,7 +129,41 @@ public class AccountResource {
         LOGGER.debug("Finished updating transactions");
 
         return Response.status(200).build();
+    }
 
+    /**
+     * Creates a CSV File with the data from the accounts
+     * @return A {@link Response} containing the text from all {@link Account}
+     */
+    @Path("/csvFile")
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response generateCSVFile() {
+        LOGGER.info("Generating a CSV File for all accounts");
+
+        String returnData = csvGenerator.generateCSVForAllAccounts();
+
+        return Response.status(200).entity(returnData).build();
+    }
+
+    /**
+     * Imports the data from an exported CSV File
+     * @param csvData Text from the CSV File
+     * @return {@link Response} containing a {@link List} of {@link Account} parsed from the CSV File
+     */
+    @Path("/import")
+    @PUT
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.TEXT_PLAIN)
+    public Response importFromCSV(String csvData) {
+        try {
+            List<Account> returnData = csvParser.parseAndClearAndStoreAccountFromCSV(csvData);
+
+            return Response.status(200).entity(returnData).build();
+        }
+        catch (IllegalArgumentException iae) {
+            return Response.status(400).entity(iae.getMessage()).build();
+        }
     }
 
     /**

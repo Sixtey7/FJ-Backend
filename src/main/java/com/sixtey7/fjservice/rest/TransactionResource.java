@@ -244,6 +244,10 @@ public class TransactionResource {
         return Response.status(200).entity(newAccount.getId().toString()).build();
     }
 
+    /**
+     * Creates a CSV File with the data from the transactions
+     * @return A {@link Response} containing the text from all {@link Transaction}
+     */
     @Path("/csvFile")
     @GET
     @Produces(MediaType.TEXT_PLAIN)
@@ -255,6 +259,11 @@ public class TransactionResource {
         return Response.status(200).entity(returnData).build();
     }
 
+    /**
+     * Imports the data from an exported CSV File
+     * @param csvData Text from the CSV File
+     * @return {@link Response} containing a {@link List} of {@link Transaction} parsed from the CSV File
+     */
     @Path("/import")
     @PUT
     @Produces(MediaType.APPLICATION_JSON)

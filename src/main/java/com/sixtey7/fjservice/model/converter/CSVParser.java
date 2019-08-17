@@ -86,6 +86,33 @@ public class CSVParser {
     }
 
     /**
+     * Clears the {@link Account} database and then parses and stores in the database all of the
+     * accounts in the provided CSV
+     * @param textFromCSV Input from the CSV File
+     * @return {@link List} of the parsed {@link Account}
+     */
+    public List<Account> parseAndClearAndStoreAccountFromCSV(String textFromCSV) {
+        acctDao.deleteAllAccounts();
+
+        List<Account> updateFromCSV = parseAndStoreAccountFromCSV(textFromCSV);
+
+        return updateFromCSV;
+    }
+
+    /**
+     * Parses and stores in the database all of the {@link Account} from the CSV File
+     * @param textFromCSV Input from the CSV File
+     * @return {@link List} of the parsed {@link Account}
+     */
+    public List<Account> parseAndStoreAccountFromCSV(String textFromCSV) {
+        List<Account> updatesFromCSV = parseAccounts(textFromCSV);
+
+        acctDao.addAllAccounts(updatesFromCSV);
+
+        return updatesFromCSV;
+    }
+
+    /**
      * Clears the {@link Transaction} database and then parses and stores in the data all of
      * transactions in the provided CSV
      * @param textFromCSV Input from the CSV File
