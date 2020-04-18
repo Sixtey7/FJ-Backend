@@ -37,9 +37,9 @@ public class TransactionRecord {
     private Transaction data;
 
     /**
-     * Don't want anyone hitting the default constructor
+     * Hibernate now needs a default constructor
      */
-    private TransactionRecord() { }
+    public TransactionRecord() { }
 
     public TransactionRecord(UUID id, Transaction data) {
         this.id = id.toString();
