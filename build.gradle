@@ -22,7 +22,7 @@ dependencies {
     testImplementation 'io.rest-assured:rest-assured'
 }
 
-group 'org.acme'
+group 'com.sixtey7'
 version '1.0.0-SNAPSHOT'
 
 compileJava {
