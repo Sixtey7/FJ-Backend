@@ -33,7 +33,7 @@ Eventually plan to leverage k8s to deploy several docker containers (Backend, Fr
 
 ### Build the Service
 * From the command line, run the command
-    * mvn package
+    * gradle build
 
 ### Run the Service
 * From the command line, run the command
