@@ -2,5 +2,4 @@ bin/
 target/
 build/
 .gradle/
-gradle/
 quarkus.log
