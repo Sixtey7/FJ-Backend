@@ -36,9 +36,9 @@ public class AccountRecord {
     private Account data;
 
     /**
-     * Don't want anyone hitting the default constructor
+     * Hibernate needs a default constructor
      */
-    private AccountRecord() { }
+    public AccountRecord() { }
 
     public AccountRecord(UUID id, Account data) {
         this.id = id.toString();
