@@ -35,6 +35,9 @@ Eventually plan to leverage k8s to deploy several docker containers (Backend, Fr
 * From the command line, run the command
     * gradle build
 
+### Build the Service for the pi
+    * gradle build -Dquarkus.profile=pi
+
 ### Run the Service
 * From the command line, run the command
     * java -jar build/fj-service-1.0.0-SNAPSHOT-runner.jar
