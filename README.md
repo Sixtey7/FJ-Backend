@@ -46,7 +46,7 @@ Eventually plan to leverage k8s to deploy several docker containers (Backend, Fr
 * Get All Accounts
     * curl http://localhost:8081/accounts
 * Put in an Account
-    * curl -XPUT -H "Content-type: application/json" -i -d '{"name":"test"}' http://localhost:8081/accounts
+    * curl -XPUT -H "Content-type: application/json" -i -d '{"name":"test", "dynamic": "true"}' http://localhost:8081/accounts
 
 ### Transactions
 * Get All Transactions
@@ -54,7 +54,7 @@ Eventually plan to leverage k8s to deploy several docker containers (Backend, Fr
 * Get For An Account
     * curl -i  http://localhost:8081/transactions/forAccount/e31f6a71-0aab-44ba-96b0-b7d756aec187
 * Put in a Transaction
-    * curl -XPUT -H "Content-type: application/json" -i -d '{"accountId": "e31f6a71-0aab-44ba-96b0-b7d756aec187", "name":"Hello", "amount": 12345}' http://localhost:8081/transactions
+    * curl -XPUT -H "Content-type: application/json" -i -d '{"accountId": "e31f6a71-0aab-44ba-96b0-b7d756aec187", "name":"Hello", "amount": 12345, "date": "2020-04-20T00:00:00.000Z"}' http://localhost:8081/transactions
 * Import transactions
     * curl -XPUT -H "Content-Type: text/plain" -i --data-binary @<CSV_LOCATION> http://localhost:8081/transactions/import/<Account_UUID>
 
