@@ -2,18 +2,37 @@ package com.sixtey7.fjservice.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import javax.persistence.Transient;
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.UUID;
 
+@Entity
+@Table(name="Transactions")
 public class Transaction implements Comparable<Transaction> {
-
+    @Id
+    @NotNull
+    @Column(name="id")
     private UUID id;
+
+    @NotNull
+    @Column(name="account_id")
     private UUID accountId;
+
+    @NotNull
+    @Column(name="name")
     private String name;
+
+    @Column(name="date")
     private String date;
+
+    @Column(name="amount")
     private Float amount;
+
+    @Column(name="type")
     private TransType type;
+
+    @Column(name="notes")
     private String notes;
 
     public Transaction() { }
@@ -171,4 +190,5 @@ public class Transaction implements Comparable<Transaction> {
 
         return sb.toString();
     }
+
 }

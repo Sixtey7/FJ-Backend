@@ -63,7 +63,7 @@ public class AccountHelper {
 
             accountToUpdate = updateBalanceForAccount(accountToUpdate);
 
-            if (!accountDAO.updateAccount(accountId, accountToUpdate)) {
+            if (!accountDAO.updateAccount(accountToUpdate)) {
                 return null;
             }
         }
@@ -82,7 +82,7 @@ public class AccountHelper {
      */
     public Account updateBalanceForAccount(Account accountToUpdate) {
         if (!accountToUpdate.getDynamic()) {
-            List<Transaction> txList = transDAO.getTransForAccount(accountToUpdate.getId().toString());
+            List<Transaction> txList = transDAO.getTxForAccount(accountToUpdate.getId().toString());
 
             LOGGER.info("Got {} transactions for account {}", txList.size(), accountToUpdate.getId().toString());
             return updateBalanceForAccount(accountToUpdate, txList);

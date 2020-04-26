@@ -143,7 +143,7 @@ public class TransactionResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getTransForAccount(@PathParam("accountId") final String accountId) {
         LOGGER.info("Getting the transaction details for account id {}", accountId);
-        List allTransactions = dao.getTransForAccount(accountId);
+        List allTransactions = dao.getTxForAccount(accountId);
 
         LOGGER.debug("Found {} transactions for account {}", allTransactions.size(), accountId);
         try {
@@ -239,7 +239,7 @@ public class TransactionResource {
 
         acctHelper.updateBalanceForAccount(newAccount);
 
-        acctDao.updateAccount(newAccount.getId().toString(), newAccount);
+        acctDao.updateAccount(newAccount);
 
         return Response.status(200).entity(newAccount.getId().toString()).build();
     }
@@ -306,7 +306,7 @@ public class TransactionResource {
         //going to get an ISO date from the frontend, let's fix that
         transHelper.fixDateForTrans(transaction);
 
-        boolean result = dao.updateTransaction(transactionId, transaction);
+        boolean result = dao.updateTransaction(transaction);
 
         //TODO: This really needs to be smarter, needs to look at old vs new
         // and only update if needed (if the state was or is now confirmed

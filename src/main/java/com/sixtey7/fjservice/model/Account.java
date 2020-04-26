@@ -1,53 +1,52 @@
 package com.sixtey7.fjservice.model;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
-/**
- * Class representing an account that may contain one or more transactions
- */
+@Entity
+@Table(name = "Accounts")
 public class Account {
-
-    /**
-     * the id assigned to the account
-     */
+    @Id
+    @NotNull
+    @Column(name="id")
     private UUID id;
 
-    /**
-     * The name of the accoubnt
-     */
+    @NotNull
+    @Column(name="name")
     private String name;
 
-    /**
-     * The current balance of the account
-     */
+    @Column(name="amount")
     private Float amount;
 
-    /**
-     * Notes that are tied to the account
-     */
+    @Column(name="notes")
     private String notes;
 
-    /**
-     * Flag that indicates if this account's amount is calculated based on transactions or set by the user
-     */
+    @Column(name="dynamic")
     private Boolean dynamic;
 
     /**
-     * Masking the default constructor because we don't want the required fields to not be set
+     * Default constructor for hibernate
      */
-    public Account() { }
+    public Account() {}
 
-    public Account(String name) {
-        this.id = UUID.randomUUID();
-        this.name = name;
-    }
-
+    /**
+     * Constructor
+     */
     public Account(String name, float amount, String notes, boolean dynamic) {
         this.id = UUID.randomUUID();
         this.name = name;
         this.amount = amount;
         this.notes = notes;
         this.dynamic = dynamic;
+    }
+
+    public Account(String name) {
+        this.id = UUID.randomUUID();
+        this.name = name;
     }
 
     public UUID getId() {

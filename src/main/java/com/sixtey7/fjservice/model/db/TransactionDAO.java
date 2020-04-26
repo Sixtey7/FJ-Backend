@@ -1,7 +1,6 @@
 package com.sixtey7.fjservice.model.db;
 
 import com.sixtey7.fjservice.model.Transaction;
-import com.sixtey7.fjservice.model.TransactionRecord;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -15,36 +14,30 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * DAO Class for the Transaction table
+ * DAO class for the Transactions table
  */
 @Dependent
 public class TransactionDAO {
 
     /**
-     * Entity Manager to be used for this DAO
+     * Entity manager to be used for this DAO
      */
     @Inject
     private EntityManager em;
 
     /**
-     * LOGGER to be used for this class
+     * Logger to be used for this class
      */
     private static final Logger LOGGER = LogManager.getLogger(TransactionDAO.class);
 
     /**
      * Returns all of the transactions in the database
-     * @return {@link List} containing all of the {@link Transaction} in the database
+     * @return {@link List} of {@link Transaction}
      */
     public List<Transaction> getAllTransactions() {
-        LOGGER.debug("Getting all transactions");
+        LOGGER.debug("Getting all transactions!");
 
-        List<TransactionRecord> records = em.createQuery("Select t from TransactionRecord t", TransactionRecord.class).getResultList();
-
-        List<Transaction> returnList = new ArrayList<>();
-        for (TransactionRecord tr : records) {
-            LOGGER.trace("Adding transaction record with id {}", tr.getId());
-            returnList.add(tr.getData());
-        }
+        List<Transaction> returnList = em.createQuery("Select t from Transactions t", Transaction.class).getResultList();
 
         LOGGER.debug("Returning {} transactions", returnList.size());
 
@@ -52,107 +45,93 @@ public class TransactionDAO {
     }
 
     /**
-     * Returns the data for the specified Transaction
-     * @param transactionId String representing the UUID of the transaction to get data for
-     * @return {@link Transaction} object that was requested (null if not present)
+     * Returns the data for the specified {@link Transaction}
+     * @param transId String containing the UUID of the {@link Transaction}
+     * @return {@link Transaction} specified by the id or null if not found
      */
-    public Transaction getTransaction(String transactionId) {
-        LOGGER.debug("Getting transaction for id {}", transactionId);
+    public Transaction getTransaction(String transId) {
+        LOGGER.debug("Getting the transaction for id {}", transId);
         try {
-            TransactionRecord tr = em.createQuery("Select t from TransactionRecord t where t.id = '" + transactionId + "'", TransactionRecord.class).getSingleResult();
-
-            return tr.getData();
+            return em.createQuery("Select t from Transaction where t.id = '" + transId + "'", Transaction.class).getSingleResult();
         }
-        catch (NoResultException nre) {
-            //TODO: Probably shouldn't rely on catching an error here and handle this smoother
-            LOGGER.warn("Failed to find transaction with id: {}", transactionId);
+        catch(NoResultException nre) {
+            LOGGER.warn("Failed to find transaction with id {}", transId);
             return null;
         }
     }
 
     /**
-     * Gets all of the transactions that are tied to the specified record
-     * @param accountId String containing the account id to search for
-     * @return {@link List} of {@link Transaction} that match the specified account id
+     * Returns all of the {@link Transaction} mapped to the provided account id
+     * @param accountId String containing the UUID of the account
+     * @return {@link List} of {@link Transaction} matching the provided account UUID
      */
-    public List<Transaction> getTransForAccount(final String accountId) {
-        LOGGER.debug("Getting all transactions for account {}", accountId);
-        @SuppressWarnings("unchecked")
-        List<TransactionRecord> records = em.createNativeQuery("Select * from Transactions t WHERE t.data->>'accountId' = '" + accountId + "'", TransactionRecord.class).getResultList();
-        LOGGER.debug("Found {} transaction records", records.size());
-        List<Transaction> returnList = new ArrayList<>();
-        records.forEach(transactionRecord -> returnList.add(transactionRecord.getData()));
+    public List<Transaction> getTxForAccount(final String accountId) {
+        LOGGER.debug("Getting all transaction for account {}", accountId);
 
-        LOGGER.trace("Build {} transactions to return", returnList.size());
-        return returnList;
+        List<Transaction> returnTxs = em.createQuery("Select t from Transactions t where t.accountId = '" + accountId + "'", Transaction.class).getResultList();
+
+        LOGGER.debug("Returning {} transactions", returnTxs);
+        return returnTxs;
     }
 
     /**
-     * Adds the provided transaction to the database
-     * @param transactionToAdd {@link Transaction} to be added to the database
-     * @return String containing the UUID of the added transaction
+     * Adds the provided {@link Transaction} to the database
+     * @param txToAdd {@link Transaction} to be persisted
+     * @return String containing the UUID of the {@link Transaction} that was persisted
      */
     @Transactional
-    public String addTransaction(Transaction transactionToAdd) {
-        LOGGER.debug("Adding a new transaction");
-        if (transactionToAdd.getId() == null) {
+    public String addTransaction(Transaction txToAdd) {
+        LOGGER.debug("Adding a new transaction!");
+        if (txToAdd.getId() == null) {
             UUID id = UUID.randomUUID();
 
-            LOGGER.debug("Generated the id {}" , id);
-            transactionToAdd.setId(id);
+            LOGGER.debug("Generated the id {}", id);
+            txToAdd.setId(id);
         }
-        else {
-            LOGGER.debug("Transaction already had an ID ({}), no need to assign one", transactionToAdd.getId());
-        }
-
-        TransactionRecord trToPersist = new TransactionRecord(transactionToAdd.getId(), transactionToAdd);
 
         try {
-            em.persist(trToPersist);
+            em.persist(txToAdd);
         }
-        catch (Exception ex) {
-            LOGGER.error("Failed to persist transaction!", ex);
-            return null;
+        catch(Exception ex) {
+            LOGGER.error("Failed to persist transaction", ex);
         }
 
-        return transactionToAdd.getId().toString();
+        return txToAdd.getId().toString();
     }
 
     /**
-     * Adds a list of transactions to the database
-     * @param transList - {@link List} of {@link Transaction} to be added
-     * @return {@link List} of Strings containing the UUIDs assigned to the transactions
+     * Adds all of the provided transactions
+     * @param txsToPersist {@link List} of {@link Transaction} that are to be persisted
+     * @return {@link List} of Strings containing the UUIDs that were persisted
      */
-    public List<String> addAllTransactions(List<Transaction> transList) {
-        LOGGER.debug("Saving {} transactions", transList.size());
-        List<String> returnList = new ArrayList<>();
+    public List<String> addAllTransactions(List<Transaction> txsToPersist) {
+        LOGGER.debug("Saving {} transactions", txsToPersist.size());
 
-        //TODO: I'm sure there's a better way to do this - but not a faster one to code!
-        for(Transaction thisTrans : transList) {
-            String assignedId = this.addTransaction(thisTrans);
-            LOGGER.trace("Adding {} to the array to return", assignedId);
-            returnList.add(assignedId);
-        }
+        List<String> returnList = new ArrayList<>(txsToPersist.size());
+
+        txsToPersist.forEach(tx -> {
+            // This is technically risky as null could be returned above, but that'll never happen
+                // Famous last words...
+            returnList.add(this.addTransaction(tx));
+        });
 
         LOGGER.debug("Added {} transactions", returnList.size());
         return returnList;
     }
 
     /**
-     * Updates the transaction matching the provided transaction id with the provided {@link Transaction}
-     * @param transactionId String containing the UUID of the transaction
-     * @param transToUpdate {@link Transaction} the transaction object to save
-     * @return boolean on whether or not the save was successful
+     * Updates the provided transaction in the database
+     * @param txToUpdate {@link Transaction} to be updated
+     * @return Boolean on whether or not the save was successful
      */
     @Transactional
-    public boolean updateTransaction(String transactionId, Transaction transToUpdate) {
-        LOGGER.debug("Updating transaction {}", transactionId);;
-        TransactionRecord transactionToPersist = new TransactionRecord(UUID.fromString(transactionId), transToUpdate);
+    public boolean updateTransaction(Transaction txToUpdate) {
+        LOGGER.debug("Updating transaction {}", txToUpdate.getId().toString());
 
         try {
-            em.merge(transactionToPersist);
+            em.merge(txToUpdate);
         }
-        catch (Exception ex) {
+        catch(Exception ex) {
             LOGGER.error("Failed to persist update of transaction", ex);
             return false;
         }
@@ -161,29 +140,33 @@ public class TransactionDAO {
     }
 
     /**
-     * Deletes the transaction matching the provided UUID
-     * @param idToDelete String containing the UUID of the transaction to delete
-     * @return integer capturing the number of records deleted (nominally 0 or 1)
+     * Deletes the {@link Transaction} associated with the provided id
+     * @param idToDelete String containing the id of the {@link Transaction} to be deleted
+     * @return integer capturing the number of records deleted (nominally one)
      */
     @Transactional
     public int deleteTransaction(String idToDelete) {
         LOGGER.debug("Deleting transaction {}", idToDelete);
-        int returnVal = em.createQuery("Delete from TransactionRecord t where t.id = '" + idToDelete + "'").executeUpdate();
 
-        LOGGER.debug("Deleted {} transactions", returnVal);
-        return returnVal;
+        int returnValue = em.createQuery("Delete from Transaction t where t.id = '" + idToDelete + "'").executeUpdate();
+
+        LOGGER.debug("Deleted {} transactions", returnValue);
+
+        return returnValue;
     }
 
     /**
-     * Deletes all of the transactions in the database
-     * @return integer capturing the number of records deleted
+     * Deletes all of the {@link Transaction} in the database
+     * @return the number of entries deleted
      */
     @Transactional
     public int deleteAllTransactions() {
-        LOGGER.debug("Deleting all transactions");
-        int returnVal = em.createQuery("Delete from TransactionRecord t").executeUpdate();
+        LOGGER.debug("Deleting all transactions!");
 
-        LOGGER.debug("Deleted {} transactions", returnVal);
-        return returnVal;
+        int returnValue = em.createQuery("Delete from Transaction t").executeUpdate();
+
+        LOGGER.debug("Deleted {} transactions", returnValue);
+
+        return returnValue;
     }
 }

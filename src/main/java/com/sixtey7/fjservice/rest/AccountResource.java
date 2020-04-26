@@ -204,7 +204,7 @@ public class AccountResource {
             return Response.status(400).entity("ID is required as part of the path!").build();
         }
 
-        boolean result = dao.updateAccount(accountId, account);
+        boolean result = dao.updateAccount(account);
 
         if (result) {
             return Response.status(200).build();

@@ -1,7 +1,6 @@
 package com.sixtey7.fjservice.model.db;
 
 import com.sixtey7.fjservice.model.Account;
-import com.sixtey7.fjservice.model.AccountRecord;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -14,9 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-/**
- * DAO Class for the Accounts table
- */
 @Dependent
 public class AccountDAO {
 
@@ -33,34 +29,31 @@ public class AccountDAO {
 
     /**
      * Returns all of the accounts in the database
-     * @return {@link List} containing all of the {@link Account} in the database
+     * @return {@link List} containing all of the {@link Account} entries in the database
      */
     public List<Account> getAllAccounts() {
         LOGGER.debug("Getting all accounts");
-        List<AccountRecord> records = em.createQuery("Select a from AccountRecord a", AccountRecord.class).getResultList();
 
-        List<Account> returnList = new ArrayList<>();
+        List<Account> returnList = em.createQuery("Select a from Account a", Account.class).getResultList();
 
-        records.forEach(accountRecord -> returnList.add(accountRecord.getData()));
-
-        LOGGER.debug("Returning {} Accounts", returnList.size());
+        LOGGER.debug("Returning {} accounts", returnList.size());
         return returnList;
     }
 
     /**
      * Returns the data for the specified account
-     * @param accountId String representing the UUID of the account to get data for
-     * @return {@link Account} object that was requested (null if not present)
+     * @param accountId String representing the UUID of the account to get
+     * @return {@link Account} object that was requested (null if not found)
      */
     public Account getAccount(String accountId) {
-        LOGGER.debug("Getting account for id {}", accountId);
+        LOGGER.debug("Getting account for id: {}", accountId);
         try {
-            AccountRecord ar = (AccountRecord) em.createQuery("Select a from AccountRecord a where a.id = '" + accountId + "'").getSingleResult();
+            Account acct = (Account) em.createQuery("Select a from Account a where a.id = '" + accountId + "'").getSingleResult();
 
-            return ar.getData();
+            return acct;
         }
-        catch (NoResultException nre) {
-            //TODO: Probably shouldn't rely on catching an error here and handle this smoother
+        catch(NoResultException nre) {
+            // TODO: Probably shouldn't rely on catching an error here and handle this more gracefully
             LOGGER.warn("Failed to find account with id: {}", accountId);
             return null;
         }
@@ -68,70 +61,60 @@ public class AccountDAO {
 
     /**
      * Adds the provided account to the database
-     * @param accountToAdd {@link Account} the account object to add to the database
-     * @return String containing the UUID of the added account
+     * @param acctToAdd {@link Account} the account object to be persisted
+     * @return String containing the id of the added account
      */
     @Transactional
-    public String addAccount(Account accountToAdd) {
+    public String addAccount(Account acctToAdd) {
         LOGGER.debug("Adding a new account!");
 
-        if (accountToAdd.getId() == null) {
-            UUID newId = UUID.randomUUID();
-            LOGGER.debug("Generated the id {}", newId);
-            accountToAdd.setId(newId);
+        if (acctToAdd.getId() == null) {
+            acctToAdd.setId(UUID.randomUUID());
         }
-        else {
-            LOGGER.debug("Account already had an ID ({}), no need to reassign", accountToAdd.getId());
-        }
-
-        AccountRecord arToPersist = new AccountRecord(accountToAdd.getId(), accountToAdd);
 
         try {
-            em.persist(arToPersist);
+            em.persist(acctToAdd);
         }
         catch (Exception ex) {
             LOGGER.error("Failed to persist account", ex);
             return null;
         }
 
-        return accountToAdd.getId().toString();
+        return acctToAdd.getId().toString();
     }
 
     /**
-     * Adds a list of accounts to the database
-     * @param acctList {@link List} of {@link Account} to be added
-     * @return {@link List} of Strings containing the UUIDs assigned to the accounts
+     * Adds all of the provided accounts
+     * @param acctsToPersist {@link List} of {@link Account} that are to be persisted
+     * @return {@link List} of Strings containing the UUIDs that were persisted
      */
-    public List<String> addAllAccounts(List<Account> acctList) {
-        LOGGER.debug("Saving {} accounts", acctList.size());
-        List<String> returnList = new ArrayList<>();
+    public List<String> addAllAccounts(List<Account> acctsToPersist) {
+        LOGGER.debug("Saving {} accounts", acctsToPersist.size());
 
-        for (Account thisAcct : acctList) {
-            String assignedId = this.addAccount(thisAcct);
-            LOGGER.trace("adding {} to the array to return", assignedId);
-            returnList.add(assignedId);
-        }
+        List<String> returnList = new ArrayList<>(acctsToPersist.size());
+
+        acctsToPersist.forEach(acct -> {
+            returnList.add(this.addAccount(acct));
+        });
 
         LOGGER.debug("Added {} accounts", returnList.size());
         return returnList;
     }
 
     /**
-     * Updates the account matching the provided account id with the provided {@link Account}
-     * @param accountId String containing the UUID of the account
-     * @param accountToUpdate {@link Account} the account object to save
+     * Updates the provided {@link Account}
+     * @param accountToUpdate {@link Account} object to save
      * @return boolean on whether or not the save was successful
      */
     @Transactional
-    public boolean updateAccount(String accountId, Account accountToUpdate) {
-        LOGGER.debug("Updating account {}", accountId);
-        AccountRecord accountToPersist = new AccountRecord(UUID.fromString(accountId), accountToUpdate);
+    public boolean updateAccount(Account accountToUpdate) {
+        LOGGER.debug("Updating account {}", accountToUpdate.getId());
 
         try {
-            em.merge(accountToPersist);
+            em.merge(accountToUpdate);
         }
-        catch(Exception ex) {
-            LOGGER.error("Failed to persist update of account", ex);
+        catch (Exception ex) {
+            LOGGER.error("Failed tio persist update of account", ex);
             return false;
         }
 
@@ -141,31 +124,26 @@ public class AccountDAO {
     /**
      * Deletes the account matching the provided UUID
      * @param idToDelete String containing the UUID of the account to delete
-     * @return integer capturing the number of records deleted (nominally 0 or 1)
+     * @return integer capturing the number of records deleted (nominally 1)
      */
     @Transactional
     public int deleteAccount(String idToDelete) {
         LOGGER.debug("Deleting account {}", idToDelete);
-        int returnVal = em.createQuery("Delete from AccountRecord a where a.id = '" + idToDelete + "'").executeUpdate();
+        int returnVal = em.createQuery("Delete from Account a where a.id = '" + idToDelete + "'").executeUpdate();
 
-        LOGGER.debug("Deleting {} accounts", returnVal);
+        LOGGER.debug("Deleted {} accounts", returnVal);
+
         return returnVal;
     }
 
-    /**
-     * Deletes all of the accounts in the database
-     * @return integer capturing the number of records deleted
-     */
     @Transactional
     public int deleteAllAccounts() {
         LOGGER.debug("Deleting all accounts!");
 
-        int returnVal = em.createQuery("Delete from AccountRecord a").executeUpdate();
+        int returnVal = em.createQuery("Delete from Account a").executeUpdate();
 
-        LOGGER.debug("Deleting {} accounts", returnVal);
+        LOGGER.debug("Deleted {} accounts", returnVal);
+
         return returnVal;
     }
-
-
-
 }
