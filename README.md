@@ -26,9 +26,9 @@ Eventually plan to leverage k8s to deploy several docker containers (Backend, Fr
 * Exit the database and log in as fjuser
     * psql -U fjuser fjdb
 * Create the Accounts table
-    * CREATE TABLE Accounts (id VARCHAR PRIMARY KEY, data jsonb);
+    * CREATE TABLE Accounts (id VARCHAR PRIMARY KEY, name text, amount real, notes text, dynamic boolean);
 * Create the Transactions table
-    * CREATE TABLE Transactions (id VARCHAR PRIMARY KEY, data jsonb);
+    * CREATE TABLE Transactions (id VARCHAR PRIMARY KEY, account_id VARCHAR, name text, date date, amount real, type text, notes text);
 * Profit!
 
 ### Build the Service
