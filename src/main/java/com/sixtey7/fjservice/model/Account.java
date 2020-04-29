@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
 @Entity
-@Table(name = "Accounts")
+@Table(name = "accounts")
 public class Account {
     @Id
     @NotNull

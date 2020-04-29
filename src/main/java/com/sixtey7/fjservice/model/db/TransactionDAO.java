@@ -37,7 +37,7 @@ public class TransactionDAO {
     public List<Transaction> getAllTransactions() {
         LOGGER.debug("Getting all transactions!");
 
-        List<Transaction> returnList = em.createQuery("Select t from Transactions t", Transaction.class).getResultList();
+        List<Transaction> returnList = em.createQuery("Select t from Transaction t", Transaction.class).getResultList();
 
         LOGGER.debug("Returning {} transactions", returnList.size());
 
@@ -68,7 +68,7 @@ public class TransactionDAO {
     public List<Transaction> getTxForAccount(final String accountId) {
         LOGGER.debug("Getting all transaction for account {}", accountId);
 
-        List<Transaction> returnTxs = em.createQuery("Select t from Transactions t where t.accountId = '" + accountId + "'", Transaction.class).getResultList();
+        List<Transaction> returnTxs = em.createQuery("Select t from Transaction t where t.accountId = '" + accountId + "'", Transaction.class).getResultList();
 
         LOGGER.debug("Returning {} transactions", returnTxs);
         return returnTxs;
