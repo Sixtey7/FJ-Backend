@@ -65,5 +65,3 @@ Eventually plan to leverage k8s to deploy several docker containers (Backend, Fr
 
 ### Run the Container
 * docker run --name fj-backend -p 8081:8081 -d fj-backend:latest
-## References
-https://helidon.io/
