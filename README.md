@@ -36,6 +36,7 @@ Eventually plan to leverage k8s to deploy several docker containers (Backend, Fr
     * gradle build
 
 ### Build the Service for the pi
+* From the command line, run the command
     * gradle build -Dquarkus.profile=pi
 
 ### Run the Service
