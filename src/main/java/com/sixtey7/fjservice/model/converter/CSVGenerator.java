@@ -145,7 +145,7 @@ public class CSVGenerator {
         sb.append(acctName);
         sb.append(",");
 
-        sb.append(tx.getDateAsLocalDT());
+        sb.append(tx);
         sb.append(",");
 
         sb.append(tx.getType().toString());
