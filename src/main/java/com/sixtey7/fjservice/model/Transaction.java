@@ -1,7 +1,5 @@
 package com.sixtey7.fjservice.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
@@ -24,7 +22,7 @@ public class Transaction implements Comparable<Transaction> {
     private String name;
 
     @Column(name="date")
-    private String date;
+    private LocalDate date;
 
     @Column(name="amount")
     private Float amount;
@@ -40,7 +38,7 @@ public class Transaction implements Comparable<Transaction> {
     public Transaction(final String name, final LocalDate date, final float amount, final UUID accountId) {
         this.id = UUID.randomUUID();
         this.name = name;
-        this.date = date.toString();
+        this.date = date;
         this.amount = amount;
         this.accountId = accountId;
 
@@ -50,7 +48,7 @@ public class Transaction implements Comparable<Transaction> {
     public Transaction(final String name, final LocalDate date, final float amount, final UUID accountId, final String notes) {
         this.id = UUID.randomUUID();
         this.name = name;
-        this.date = date.toString();
+        this.date = date;
         this.amount = amount;
         this.accountId = accountId;
         this.notes = notes;
@@ -61,7 +59,7 @@ public class Transaction implements Comparable<Transaction> {
     public Transaction(final String name, final LocalDate date, final float amount, final UUID accountId, final String notes, TransType type) {
         this.id = UUID.randomUUID();
         this.name = name;
-        this.date = date.toString();
+        this.date = date;
         this.amount = amount;
         this.accountId = accountId;
         this.notes = notes;
@@ -92,19 +90,20 @@ public class Transaction implements Comparable<Transaction> {
         this.name = name;
     }
 
-    public String getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(LocalDate date) {
         this.date = date;
     }
 
-    @Transient
+    /*@Transient
     @JsonIgnore
     public LocalDate getDateAsLocalDT() {
         return LocalDate.parse(date);
     }
+    */
 
     public Float getAmount() {
         return amount;
@@ -132,7 +131,7 @@ public class Transaction implements Comparable<Transaction> {
 
     @Override
     public int compareTo(Transaction o) {
-        return getDateAsLocalDT().compareTo(o.getDateAsLocalDT());
+        return date.compareTo(o.getDate());
     }
 
     /**
