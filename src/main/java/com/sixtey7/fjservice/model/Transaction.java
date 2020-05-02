@@ -1,8 +1,5 @@
 package com.sixtey7.fjservice.model;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.sixtey7.fjservice.model.converter.LocalDateDeserializer;
-
 import javax.json.bind.annotation.JsonbDateFormat;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -26,7 +23,6 @@ public class Transaction implements Comparable<Transaction> {
     private String name;
 
     @Column(name="date")
-    @JsonDeserialize(using = LocalDateDeserializer.class, as=LocalDate.class)
     @JsonbDateFormat(value = "yyyy-MM-dd")
     private LocalDate date;
 
