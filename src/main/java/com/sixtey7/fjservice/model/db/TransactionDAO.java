@@ -9,6 +9,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.transaction.Transactional;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -72,6 +73,13 @@ public class TransactionDAO {
 
         LOGGER.debug("Returning {} transactions", returnTxs);
         return returnTxs;
+    }
+
+    public List<Transaction> getTxBetweenDates(final LocalDate startDate, final LocalDate endDate) {
+        LOGGER.debug("Getting transactions between {} and {}", startDate.toString(), endDate.toString());
+        List<Transaction> returnList = new ArrayList<>();
+
+        return returnList;
     }
 
     /**
