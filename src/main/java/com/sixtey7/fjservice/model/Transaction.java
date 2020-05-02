@@ -1,5 +1,6 @@
 package com.sixtey7.fjservice.model;
 
+import javax.json.bind.annotation.JsonbDateFormat;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
@@ -22,6 +23,7 @@ public class Transaction implements Comparable<Transaction> {
     private String name;
 
     @Column(name="date")
+    @JsonbDateFormat(value = "yyyy-MM-dd")
     private LocalDate date;
 
     @Column(name="amount")
