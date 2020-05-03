@@ -24,6 +24,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -151,6 +152,25 @@ public class TransactionResource {
         try {
             ObjectMapper om = new ObjectMapper();
             String returnString = om.writeValueAsString(allTransactions);
+
+            return Response.status(200).entity(returnString).build();
+        }
+        catch (JsonProcessingException jpe) {
+            return Response.status(500).entity(jpe.getMessage()).build();
+        }
+    }
+
+    @Path("betweenDates/{start-date}/{end-date}")
+    @GET
+    public Response getTransactionsBetweenDates(@PathParam("start-date")LocalDate startDate, @PathParam("end-date") LocalDate endDate) {
+        LOGGER.debug("Getting the transactions between {} and {}", startDate, endDate);
+
+        List<Transaction> txsBetweenDates = dao.getTxBetweenDates(startDate, endDate);
+
+        LOGGER.debug("Found {} transactions between the dates", txsBetweenDates.size());
+        try {
+            ObjectMapper om = new ObjectMapper();
+            String returnString = om.writeValueAsString(txsBetweenDates);
 
             return Response.status(200).entity(returnString).build();
         }
