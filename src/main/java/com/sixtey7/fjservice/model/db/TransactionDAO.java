@@ -53,7 +53,7 @@ public class TransactionDAO {
     public Transaction getTransaction(String transId) {
         LOGGER.debug("Getting the transaction for id {}", transId);
         try {
-            return em.createQuery("Select t from Transaction where t.id = '" + transId + "'", Transaction.class).getSingleResult();
+            return em.createQuery("Select t from Transaction t where t.id = '" + transId + "'", Transaction.class).getSingleResult();
         }
         catch(NoResultException nre) {
             LOGGER.warn("Failed to find transaction with id {}", transId);
