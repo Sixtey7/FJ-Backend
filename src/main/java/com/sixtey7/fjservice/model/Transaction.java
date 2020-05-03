@@ -1,5 +1,7 @@
 package com.sixtey7.fjservice.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import javax.json.bind.annotation.JsonbDateFormat;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -24,6 +26,7 @@ public class Transaction implements Comparable<Transaction> {
 
     @Column(name="date")
     @JsonbDateFormat(value = "yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern= "yyyy-MM-dd")
     private LocalDate date;
 
     @Column(name="amount")

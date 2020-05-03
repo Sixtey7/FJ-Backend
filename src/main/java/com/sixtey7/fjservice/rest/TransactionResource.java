@@ -103,8 +103,6 @@ public class TransactionResource {
         LOGGER.debug("Got {} transactions", allTransactions.size());
         try {
             ObjectMapper om = new ObjectMapper();
-            DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm a z");
-            om.setDateFormat(df);
             String returnString = om.writeValueAsString(allTransactions);
 
             return Response.status(200).entity(returnString).build();
