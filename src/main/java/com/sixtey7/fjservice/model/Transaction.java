@@ -1,13 +1,7 @@
 package com.sixtey7.fjservice.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.sixtey7.fjservice.model.converter.LocalDateDeserializer;
 import com.sixtey7.fjservice.model.converter.LocalDateSerializer;
-import org.eclipse.yasson.internal.serializer.LocalDateTypeDeserializer;
-
-import javax.json.bind.annotation.JsonbDateFormat;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
