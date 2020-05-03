@@ -160,9 +160,9 @@ public class TransactionResource {
         }
     }
 
-    @Path("betweenDates/{start-date}/{end-date}")
+    @Path("betweenDates/{startDate}/{endDate}")
     @GET
-    public Response getTransactionsBetweenDates(@PathParam("start-date")LocalDate startDate, @PathParam("end-date") LocalDate endDate) {
+    public Response getTransactionsBetweenDates(@PathParam("startDate") final LocalDate startDate, @PathParam("endDate") final LocalDate endDate) {
         LOGGER.debug("Getting the transactions between {} and {}", startDate, endDate);
 
         List<Transaction> txsBetweenDates = dao.getTxBetweenDates(startDate, endDate);
