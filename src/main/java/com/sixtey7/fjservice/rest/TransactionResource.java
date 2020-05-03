@@ -22,8 +22,6 @@ import javax.json.JsonObject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -162,8 +160,11 @@ public class TransactionResource {
 
     @Path("betweenDates/{startDate}/{endDate}")
     @GET
-    public Response getTransactionsBetweenDates(@PathParam("startDate") final LocalDate startDate, @PathParam("endDate") final LocalDate endDate) {
-        LOGGER.debug("Getting the transactions between {} and {}", startDate, endDate);
+    public Response getTransactionsBetweenDates(@PathParam("startDate") final String startDateStr, @PathParam("endDate") final String endDateStr) {
+        LOGGER.debug("Getting the transactions between {} and {}", startDateStr, endDateStr);
+
+        LocalDate startDate = LocalDate.parse(startDateStr);
+        LocalDate endDate = LocalDate.parse(endDateStr);
 
         List<Transaction> txsBetweenDates = dao.getTxBetweenDates(startDate, endDate);
 
