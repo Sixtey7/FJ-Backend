@@ -22,6 +22,8 @@ import javax.json.JsonObject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -101,6 +103,8 @@ public class TransactionResource {
         LOGGER.debug("Got {} transactions", allTransactions.size());
         try {
             ObjectMapper om = new ObjectMapper();
+            DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm a z");
+            om.setDateFormat(df);
             String returnString = om.writeValueAsString(allTransactions);
 
             return Response.status(200).entity(returnString).build();
