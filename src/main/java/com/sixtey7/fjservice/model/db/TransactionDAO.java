@@ -61,6 +61,20 @@ public class TransactionDAO {
         }
     }
 
+    public List<Transaction> getTxBetweenDates(LocalDate startDate, LocalDate endDate) {
+        LOGGER.debug("Getting transactions between {} and {}", startDate, endDate);
+
+        List<Transaction> returnList =  em.createQuery("Select t from Transaction t where t.date BETWEEN :strDate AND :endDate", Transaction.class)
+                .setParameter("strDate", startDate)
+                .setParameter("endDate", endDate)
+                .getResultList();
+
+        LOGGER.debug("Returning {} transactions!", returnList.size());
+
+        return returnList;
+
+    }
+
     /**
      * Returns all of the {@link Transaction} mapped to the provided account id
      * @param accountId String containing the UUID of the account
@@ -73,13 +87,6 @@ public class TransactionDAO {
 
         LOGGER.debug("Returning {} transactions", returnTxs);
         return returnTxs;
-    }
-
-    public List<Transaction> getTxBetweenDates(final LocalDate startDate, final LocalDate endDate) {
-        LOGGER.debug("Getting transactions between {} and {}", startDate.toString(), endDate.toString());
-        List<Transaction> returnList = new ArrayList<>();
-
-        return returnList;
     }
 
     /**
