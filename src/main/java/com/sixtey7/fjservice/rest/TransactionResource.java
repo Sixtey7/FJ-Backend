@@ -180,6 +180,28 @@ public class TransactionResource {
         }
     }
 
+    @Path("newerThan/{dateFilter}")
+    @GET
+    public Response getTransactionsNewerThan(@PathParam("dateFilter") final String dateFilterStr) {
+        LOGGER.debug("Getting transactions newer than {}", dateFilterStr);
+
+        LocalDate dateFilter = LocalDate.parse(dateFilterStr);
+
+        List<Transaction> txNewerThan = dao.getTxNewerThan(dateFilter);
+
+        LOGGER.debug("Found {} transactions newer than {}", txNewerThan.size(), dateFilterStr);
+
+        try {
+            ObjectMapper om = new ObjectMapper();
+            String returnString = om.writeValueAsString(txNewerThan);
+
+            return Response.status(200).entity(returnString).build();
+        }
+        catch (JsonProcessingException jpe) {
+            return Response.status(500).entity(jpe.getMessage()).build();
+        }
+    }
+
     /**
      * REST Service used to add a transaction to the database
      * @param transaction The Details of the transaction to be deserialized into a {@link Transaction}

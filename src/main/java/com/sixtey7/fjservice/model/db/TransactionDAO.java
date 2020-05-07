@@ -61,6 +61,12 @@ public class TransactionDAO {
         }
     }
 
+    /**
+     * Returns all of the transactions in the database between the two provided values
+     * @param startDate {@link LocalDate} containing the first date of the interval
+     * @param endDate {@link LocalDate} containing the second date of the interval
+     * @return {@link List} of {@link Transaction} that are between the specified dates
+     */
     public List<Transaction> getTxBetweenDates(LocalDate startDate, LocalDate endDate) {
         LOGGER.debug("Getting transactions between {} and {}", startDate, endDate);
 
@@ -73,6 +79,23 @@ public class TransactionDAO {
 
         return returnList;
 
+    }
+
+    /**
+     * Returns all of the transactions newer than the provided date
+     * @param startDate {@link LocalDate} to start the filter from
+     * @return {@link List} of {@link Transaction} that are newer than the provided date
+     */
+    public List<Transaction> getTxNewerThan(LocalDate startDate) {
+        LOGGER.debug("Getting transactions newer than {}", startDate);
+
+        List<Transaction> returnList = em.createQuery("Select t from Transaction t where t.date > :strDate", Transaction.class)
+                    .setParameter("strDate", startDate)
+                .getResultList();
+
+        LOGGER.debug("Returning {} transactions", returnList.size());
+
+        return returnList;
     }
 
     /**
