@@ -158,6 +158,12 @@ public class TransactionResource {
         }
     }
 
+    /**
+     * REST Service used to get all of the transactions between the two provided dates
+     * @param startDateStr {@link String} String containing the date to start the query from
+     * @param endDateStr {@link String} String containing the date to end the query at
+     * @return {@link Response} containing the list of transactions between the dates
+     */
     @Path("betweenDates/{startDate}/{endDate}")
     @GET
     public Response getTransactionsBetweenDates(@PathParam("startDate") final String startDateStr, @PathParam("endDate") final String endDateStr) {
@@ -180,6 +186,11 @@ public class TransactionResource {
         }
     }
 
+    /**
+     * REST Service used to get all of the transactions after the specified date
+     * @param dateFilterStr {@link String} String containing the date to start the filter
+     * @return {@link Response} containing the list of transactions after the date
+     */
     @Path("newerThan/{dateFilter}")
     @GET
     public Response getTransactionsNewerThan(@PathParam("dateFilter") final String dateFilterStr) {
