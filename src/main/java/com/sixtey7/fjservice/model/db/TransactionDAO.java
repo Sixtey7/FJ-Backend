@@ -53,7 +53,9 @@ public class TransactionDAO {
     public Transaction getTransaction(String transId) {
         LOGGER.debug("Getting the transaction for id {}", transId);
         try {
-            return em.createQuery("Select t from Transaction t where t.id = '" + transId + "'", Transaction.class).getSingleResult();
+            return em.createQuery("Select t from Transaction t where t.id = :transId", Transaction.class)
+                    .setParameter("transId", transId)
+                    .getSingleResult();
         }
         catch(NoResultException nre) {
             LOGGER.warn("Failed to find transaction with id {}", transId);
@@ -106,7 +108,9 @@ public class TransactionDAO {
     public List<Transaction> getTxForAccount(final String accountId) {
         LOGGER.debug("Getting all transaction for account {}", accountId);
 
-        List<Transaction> returnTxs = em.createQuery("Select t from Transaction t where t.accountId = '" + accountId + "'", Transaction.class).getResultList();
+        List<Transaction> returnTxs = em.createQuery("Select t from Transaction t where t.accountId = :acctId" , Transaction.class)
+                .setParameter("acctId", accountId)
+                .getResultList();
 
         LOGGER.debug("Returning {} transactions", returnTxs);
         return returnTxs;
@@ -186,7 +190,9 @@ public class TransactionDAO {
     public int deleteTransaction(String idToDelete) {
         LOGGER.debug("Deleting transaction {}", idToDelete);
 
-        int returnValue = em.createQuery("Delete from Transaction t where t.id = '" + idToDelete + "'").executeUpdate();
+        int returnValue = em.createQuery("Delete from Transaction t where t.id = :transId")
+                .setParameter("transId", idToDelete)
+                .executeUpdate();
 
         LOGGER.debug("Deleted {} transactions", returnValue);
 
