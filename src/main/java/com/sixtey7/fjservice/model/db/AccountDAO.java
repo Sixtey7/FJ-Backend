@@ -48,7 +48,9 @@ public class AccountDAO {
     public Account getAccount(String accountId) {
         LOGGER.debug("Getting account for id: {}", accountId);
         try {
-            Account acct = (Account) em.createQuery("Select a from Account a where a.id = '" + accountId + "'").getSingleResult();
+            Account acct = (Account) em.createQuery("Select a from Account a where a.id = :acctId")
+                    .setParameter("acctId", accountId)
+                    .getSingleResult();
 
             return acct;
         }
@@ -129,7 +131,9 @@ public class AccountDAO {
     @Transactional
     public int deleteAccount(String idToDelete) {
         LOGGER.debug("Deleting account {}", idToDelete);
-        int returnVal = em.createQuery("Delete from Account a where a.id = '" + idToDelete + "'").executeUpdate();
+        int returnVal = em.createQuery("Delete from Account a where a.id = :acctId")
+                .setParameter("acctId", idToDelete)
+                .executeUpdate();
 
         LOGGER.debug("Deleted {} accounts", returnVal);
 
