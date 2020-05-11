@@ -54,7 +54,7 @@ public class TransactionDAO {
         LOGGER.debug("Getting the transaction for id {}", transId);
         try {
             return em.createQuery("Select t from Transaction t where t.id = :transId", Transaction.class)
-                    .setString("transId", transId)
+                    .setParameter("transId", UUID.fromString(transId))
                     .getSingleResult();
         }
         catch(NoResultException nre) {
