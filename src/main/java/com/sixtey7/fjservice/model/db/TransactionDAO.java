@@ -190,8 +190,10 @@ public class TransactionDAO {
     public int deleteTransaction(String idToDelete) {
         LOGGER.debug("Deleting transaction {}", idToDelete);
 
+        UUID idAsUUID = UUID.fromString(idToDelete);
+
         int returnValue = em.createQuery("Delete from Transaction t where t.id = :transId")
-                .setParameter("transId", idToDelete)
+                .setParameter("transId", idAsUUID)
                 .executeUpdate();
 
         LOGGER.debug("Deleted {} transactions", returnValue);
