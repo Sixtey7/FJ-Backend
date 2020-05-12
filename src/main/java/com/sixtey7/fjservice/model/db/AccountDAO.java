@@ -47,6 +47,8 @@ public class AccountDAO {
      */
     public Account getAccount(String accountId) {
         LOGGER.debug("Getting account for id: {}", accountId);
+
+        UUID acctUUID = UUID.fromString(accountId);
         try {
             Account acct = (Account) em.createQuery("Select a from Account a where a.id = :acctId")
                     .setParameter("acctId", accountId)
@@ -131,8 +133,9 @@ public class AccountDAO {
     @Transactional
     public int deleteAccount(String idToDelete) {
         LOGGER.debug("Deleting account {}", idToDelete);
+        UUID uuidId = UUID.fromString(idToDelete);
         int returnVal = em.createQuery("Delete from Account a where a.id = :acctId")
-                .setParameter("acctId", idToDelete)
+                .setParameter("acctId", uuidId)
                 .executeUpdate();
 
         LOGGER.debug("Deleted {} accounts", returnVal);
