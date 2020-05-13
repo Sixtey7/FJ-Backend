@@ -199,21 +199,6 @@ public class CSVParser {
     }
 
     /**
-     * Parses the Transactions from the provided CSV into a new account
-     *
-     * Note - This assumes all Txs belong to an account named with the empty string ("")
-     * @param textFromCSV {@link String} Containing the transactions to input
-     * @return {@link List} of {@link Transaction} parsed from the CSV
-     */
-    public List<Transaction> parseTxForNewAccount(String textFromCSV) {
-        Account newAccount = new Account("");
-        Map<String, UUID> accountNameMap = new HashMap<>();
-        accountNameMap.put(newAccount.getName(), newAccount.getId());
-
-        return parseTransactions(textFromCSV, accountNameMap);
-    }
-
-    /**
      * Parses all of the accounts from the provided CSV Text
      * @param textFromCSV {@link String} containing rows of CSV data
      * @return {@link List} of {@link Account} parsed from the provided data
