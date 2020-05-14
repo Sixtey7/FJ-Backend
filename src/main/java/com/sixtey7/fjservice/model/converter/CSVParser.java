@@ -65,6 +65,11 @@ public class CSVParser {
         //Store everything in the database
         TxUpdate updateFromCSV = parseAndStoreAllFromCSV(textFromCSV);
 
+        // Update all of the balance for each of the accounts
+        for (Account thisAccount : updateFromCSV.getAccounts()) {
+            acctHelper.updateBalanceForAccount(thisAccount.getId());
+        }
+
         return updateFromCSV;
     }
 
