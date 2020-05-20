@@ -20,10 +20,6 @@ public class TransHelper {
      * @return {@link Transaction} with a fixed date
      */
     public Transaction fixDateForTrans(Transaction transToMassage) {
-        //TODO: There might be a cleaner way to do this, without creating an Instant
-        //transToMassage.setDate(
-         //       LocalDate.ofInstant(Instant.parse(transToMassage.getDate()), ZoneId.of(ZoneOffset.UTC.getId())).toString());
-
         return transToMassage;
     }
 
