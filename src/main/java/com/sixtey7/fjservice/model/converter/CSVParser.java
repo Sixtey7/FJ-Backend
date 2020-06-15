@@ -99,9 +99,7 @@ public class CSVParser {
     public List<Account> parseAndClearAndStoreAccountFromCSV(String textFromCSV) {
         acctDao.deleteAllAccounts();
 
-        List<Account> updateFromCSV = parseAndStoreAccountFromCSV(textFromCSV);
-
-        return updateFromCSV;
+        return parseAndStoreAccountFromCSV(textFromCSV);
     }
 
     /**
@@ -127,9 +125,7 @@ public class CSVParser {
     public List<Transaction> parseAndClearAndStoreTxFromCSV(String textFromCSV, Map<String, UUID> acctMap) {
         txDao.deleteAllTransactions();
 
-        List<Transaction> updateFromCSV = parseAndStoreTxFromCSV(textFromCSV, acctMap);
-
-        return updateFromCSV;
+        return parseAndStoreTxFromCSV(textFromCSV, acctMap);
     }
 
     /**
@@ -225,7 +221,7 @@ public class CSVParser {
      * Parses all of the transactions from the provided CSV Text
      * @param textFromCSV {@link String} from the CSV File
      * @param accountNameMap {@link Map} of account name {@link String} to account UUID {@link UUID}
-     * @return
+     * @return {@link List} of {@link Transaction} parsed from provided data
      */
     public List<Transaction> parseTransactions(String textFromCSV, Map<String, UUID> accountNameMap) {
         List<Transaction> returnList = new ArrayList<>();
