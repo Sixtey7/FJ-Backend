@@ -10,7 +10,7 @@ Eventually plan to leverage k8s to deploy several docker containers (Backend, Fr
 
 
 ## Related Projects
-//TODO - will add when the latest and greatest frontend is started
+[FJ-Frontend](https://github.com/Sixtey7/FJ-Frontend)
 
 ## Getting Started
 
