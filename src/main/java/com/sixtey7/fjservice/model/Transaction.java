@@ -101,13 +101,6 @@ public class Transaction implements Comparable<Transaction> {
         this.date = date;
     }
 
-    /*@Transient
-    @JsonIgnore
-    public LocalDate getDateAsLocalDT() {
-        return LocalDate.parse(date);
-    }
-    */
-
     public Float getAmount() {
         return amount;
     }
