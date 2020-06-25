@@ -6,7 +6,6 @@ import com.sixtey7.fjservice.model.Account;
 import com.sixtey7.fjservice.model.Transaction;
 import com.sixtey7.fjservice.model.converter.CSVGenerator;
 import com.sixtey7.fjservice.model.converter.CSVParser;
-import com.sixtey7.fjservice.model.converter.LegacyCSVParser;
 import com.sixtey7.fjservice.model.db.AccountDAO;
 import com.sixtey7.fjservice.model.db.TransactionDAO;
 import com.sixtey7.fjservice.model.transport.TxUpdate;
@@ -23,6 +22,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -262,42 +262,15 @@ public class TransactionResource {
 
         LOGGER.debug("Importing transactions for account: " + accountId);
 
-        List<Transaction> transToImport = new LegacyCSVParser().parseCSVFile(transactionData, accountUUID);
+        Map<String, UUID> accountUUIDMap = new HashMap<>();
+        accountUUIDMap.put(accountId, accountUUID);
+        List<Transaction> transToImport = new CSVParser().parseTransactions(transactionData, accountUUIDMap);
 
         LOGGER.debug("Found {} transactions", transToImport.size());
 
         dao.addAllTransactions(transToImport);
 
         return Response.status(200).entity(transToImport.size()).build();
-    }
-
-    /**
-     * REST Service used to import transactions into a new account
-     * @param transactionData The data to import (comma separated)
-     * @return {@link Response} containing the UUID of the created account
-     */
-    @Path("/legacyImport")
-    @PUT
-    @Consumes(MediaType.TEXT_PLAIN)
-    public Response importLegacyTransactionsForNewAccount(final String transactionData) {
-        LOGGER.info("Importing legacy transactions data for new account");
-
-        Account newAccount = new Account("Imported");
-        newAccount.setDynamic(false);
-        newAccount.setName("Imported");
-        newAccount.setNotes("Imported from a CSV Party");
-
-        List<Transaction> transToImport = new LegacyCSVParser().parseCSVFile(transactionData, newAccount.getId());
-
-        LOGGER.debug("Found {} transactions", transToImport.size());
-
-        dao.addAllTransactions(transToImport);
-
-        acctHelper.updateBalanceForAccount(newAccount);
-
-        acctDao.updateAccount(newAccount);
-
-        return Response.status(200).entity(newAccount.getId().toString()).build();
     }
 
     /**
