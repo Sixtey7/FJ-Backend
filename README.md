@@ -62,6 +62,12 @@ Eventually plan to leverage k8s to deploy several docker containers (Backend, Fr
     * curl -XPUT -H "Content-Type: text/plain" -i --data-binary @<CSV_LOCATION> http://localhost:8081/transactions/import/<Account_UUID>
 
 ## Docker
+### Starting postgres
+* docker run --rm --name pg-docker -e POSTGRES_PASSWORD=docker -d -p 5432:5432 -v /data/postgres:/var/lib/postgresql/data postgres
+
+### Run backend with raspberrypi postgres
+* docker run --name agt-backend -p 5000:5000 -e DB_LOC=/data/sqlite -e DB_TYPE=postgres -e SERVER_URL=raspberrypi -v /data/sqlite:/data/sqlite -d agt-backend:latest
+
 ### Build the Container
 * docker build -t fj-backend:latest .
 
