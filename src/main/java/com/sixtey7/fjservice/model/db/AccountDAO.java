@@ -13,6 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * DAO class for Account objects
+ */
 @Dependent
 public class AccountDAO {
 
