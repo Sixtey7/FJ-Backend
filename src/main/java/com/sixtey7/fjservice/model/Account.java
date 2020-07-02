@@ -7,6 +7,9 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
+/**
+ * Entity class used for account objects
+ */
 @Entity
 @Table(name = "accounts")
 public class Account {

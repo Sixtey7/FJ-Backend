@@ -7,6 +7,9 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.UUID;
 
+/**
+ * Entity class used for transaction objects
+ */
 @Entity
 @Table(name="transactions")
 public class Transaction implements Comparable<Transaction> {
