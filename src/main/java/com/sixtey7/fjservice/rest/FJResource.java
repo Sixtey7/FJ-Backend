@@ -35,6 +35,10 @@ public class FJResource {
     @Inject
     private CSVParser csvParser;
 
+    /**
+     * Endpoint used to test the status of the service
+     * @return {@link String} a message indicating that the call was successful
+     */
     @Path("/healthz")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -47,6 +51,10 @@ public class FJResource {
     }
 
 
+    /**
+     * REST Service used to generate a CSV file containing the contents of the backend
+     * @return {@link String} containing the contents of the CSV File
+     */
     @Path("/csvFile")
     @GET
     @Produces(MediaType.TEXT_PLAIN)
@@ -58,6 +66,11 @@ public class FJResource {
         return Response.status(200).entity(returnData).build();
     }
 
+    /**
+     * REST service used to import the contents of the CSV File
+     * @param csvData {@link String} the text from the CSV File
+     * @return {@link String} the imported data
+     */
     @Path("/import")
     @PUT
     @Produces(MediaType.APPLICATION_JSON)
@@ -75,6 +88,11 @@ public class FJResource {
         }
     }
 
+    /**
+     * Cleans out the database adn then imports the provided data
+     * @param csvData {@link String} the text from the CSV File
+     * @return {@link String} the imported data
+     */
     @Path("/cleanAndImport")
     @PUT
     @Produces(MediaType.APPLICATION_JSON)
