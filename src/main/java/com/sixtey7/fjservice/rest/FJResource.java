@@ -15,7 +15,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /**
- * RESTful Service used to create and obtain FJ Service infromation
+ * RESTful Service used to create and obtain FJ Service information
  */
 @Path("/fjservice")
 @RequestScoped
